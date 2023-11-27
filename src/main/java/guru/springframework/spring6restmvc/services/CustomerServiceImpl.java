@@ -13,8 +13,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     private Map<UUID, Customer> customerMap;
     public CustomerServiceImpl() {
-        this.customerMap = new HashMap<>();
-
         Customer customer1 = Customer.builder()
                 .id(UUID.randomUUID())
                 .customerName("terry")
@@ -39,6 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .lastModifiedDate(LocalDateTime.now())
                 .build();
 
+        customerMap = new HashMap<>();
         customerMap.put(customer1.getId(), customer1);
         customerMap.put(customer2.getId(), customer2);
         customerMap.put(customer3.getId(), customer3);
@@ -55,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer saveCustomer(Customer customer) {
+    public Customer saveNewCustomer(Customer customer) {
         Customer savedCustomer = Customer.builder()
                 .id(UUID.randomUUID())
                 .customerName(customer.getCustomerName())
