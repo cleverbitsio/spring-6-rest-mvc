@@ -15,8 +15,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 
 import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -40,9 +42,21 @@ class BeerControllerTest {
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
 
     @Test
-    void testCreateNewBeer() throws JsonProcessingException {
+    void testCreateNewBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().get(0);
-        System.out.println(objectMapper.writeValueAsString(beer));
+        // reset the id and version so that we can re-use beer as a new beer object
+        beer.setId(null);
+        beer.setVersion(null);
+
+        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beer);
+
+        mockMvc.perform(post("/api/v1/beer")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
     }
 
     @Test
