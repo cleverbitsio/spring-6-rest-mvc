@@ -49,4 +49,10 @@ public class BeerController {
         beerService.deleteBeerById(beerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+    @PatchMapping("/{beerId}")
+    public ResponseEntity updateBeerPatchById(@PathVariable UUID beerId, @RequestBody Beer updatedBeer) {
+        beerService.updateBeerPatchById(beerId, updatedBeer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 }

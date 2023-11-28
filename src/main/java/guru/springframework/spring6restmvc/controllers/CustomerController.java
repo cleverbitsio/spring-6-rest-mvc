@@ -49,4 +49,10 @@ public class CustomerController {
         customerService.deleteCustomerById(customerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+    @PatchMapping("{customerId}")
+    public ResponseEntity updateCustomerPatchById(@PathVariable UUID customerId, @RequestBody Customer updatedCustomer) {
+        customerService.updateCustomerPatchById(customerId, updatedCustomer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 }
