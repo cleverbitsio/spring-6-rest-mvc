@@ -16,7 +16,6 @@ public class BeerServiceImpl implements BeerService {
     private Map<UUID, Beer> beerMap;
 
     public BeerServiceImpl() {
-        this.beerMap = new HashMap<>();
 
         Beer beer1 = Beer.builder()
                 .id(UUID.randomUUID())
@@ -54,27 +53,28 @@ public class BeerServiceImpl implements BeerService {
                 .updateDate(LocalDateTime.now())
                 .build();
 
+        beerMap = new HashMap<>();
         beerMap.put(beer1.getId(), beer1);
         beerMap.put(beer2.getId(), beer2);
         beerMap.put(beer3.getId(), beer3);
     }
 
     @Override
-    public List<Beer> listBeers(){
+    public List<Beer> listBeers() {
+        log.debug("in listBeers - in service!");
         return new ArrayList<>(beerMap.values());
     }
 
     @Override
     public Beer getBeerById(UUID id) {
-
-        log.debug("Get Beer by Id - in service. Id: " + id.toString());
-
+        log.debug("Get getBeerById - in service. Id: " + id.toString());
         return beerMap.get(id);
     }
 
     @Override
     public Beer saveNewBeer(Beer beer) {
 
+        log.debug("in saveNewBeer - in service!");
         Beer savedBeer = Beer.builder()
                 .id(UUID.randomUUID())
                 .version(beer.getVersion())
@@ -92,6 +92,8 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public void updateBeerById(UUID beerId, Beer updatedBeer) {
+
+        log.debug("in updateBeerById - in service! Id: " + beerId);
         Beer existingbeer = getBeerById(beerId);
 
         existingbeer.setBeerName(updatedBeer.getBeerName());
@@ -106,11 +108,14 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public void deleteBeerById(UUID beerId) {
+        log.debug("in deleteBeerById - in service! Id: " + beerId);
         beerMap.remove(beerId);
     }
 
     @Override
     public void updateBeerPatchById(UUID beerId, Beer updatedBeer) {
+
+        log.debug("in updateBeerPatchById - in service! Id: " + beerId);
 
         Beer existingbeer = getBeerById(beerId);
 

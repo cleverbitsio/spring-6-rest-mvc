@@ -1,6 +1,8 @@
 package guru.springframework.spring6restmvc.controllers;
 
+import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.services.BeerService;
+import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9,48 +11,66 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@SpringBootTest
-@WebMvcTest(BeerController.class) // Test splice which is limited to the BeerController class
+@WebMvcTest(BeerController.class)
 class BeerControllerTest {
 
-    // No longer need to reference the BeerController class because we've used @WebMvcTest(BeerController.class)
-    // which will autowire the BeerController into the Spring Context
-    // @Autowired
-    // BeerController beerController;
-
-    // This setups Spring MockMVC component via DI via the Spring Framework
     @Autowired
     MockMvc mockMvc;
 
-    // The BeerController has a dependency BeerService
-    // we want to test this dependency - so lets set that up via DI
-    // MockBean sets up a Mock of the BeerService into the Spring Context
     @MockBean
     BeerService beerService;
 
+    // Here we are going to tell Mockito how to return actual data
+    // using the BeerServiceImpl class - since it already contains data which we manually mocked earlier in the course
+    BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+
     @Test
     void getBeerById() throws Exception {
-        // the get method matches the annotation on the BeerController classes getBeerById() method
-        // this is how MockMVC knows to test getBeerById()
-        // this will return 200 - so it will pass but no data is actually returned - we will fix that in the next branch
+
+        // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
+        // here we get the first one from the list
+        Beer testBeer = beerServiceImpl.listBeers().get(0);
+
+        // previously Mockito was returning a null body and null content type
+        // here we tell Mockito to return testBeer for any UUID object passed to the getBeerById method of the BeerService
+        // given any (any is a matcher) UUID object, we will return our testBeer object
+        given(beerService.getBeerById(any(UUID.class))).willReturn(testBeer);
+
         ResultActions resultActions = mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID())
-                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         printResultActions(resultActions);
     }
 
     @Test
     void listBeers() throws Exception {
-        // this will return 200 - so it will pass but no data is actually returned - we will fix that in the next branch
+
+        // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
+        List<Beer> testBeers = beerServiceImpl.listBeers();
+
+        // previously Mockito was returning a null body and null content type
+        // here we tell Mockito to return testBeers when we call the BeerService listBeers method
+        // given the beerService listBeers method, we will return our testBeers object
+        given(beerService.listBeers()).willReturn(testBeers);
+
         ResultActions resultActions = mockMvc.perform(get("/api/v1/beer")
-                                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         printResultActions(resultActions);
     }
