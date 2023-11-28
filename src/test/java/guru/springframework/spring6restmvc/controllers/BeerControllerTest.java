@@ -36,7 +36,7 @@ class BeerControllerTest {
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
 
     @Test
-    void getBeerById() throws Exception {
+    void testGetBeerById() throws Exception {
 
         // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
         // here we get the first one from the list
@@ -59,7 +59,7 @@ class BeerControllerTest {
     }
 
     @Test
-    void listBeers() throws Exception {
+    void testListBeers() throws Exception {
 
         // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
         List<Beer> testBeers = beerServiceImpl.listBeers();
@@ -72,7 +72,8 @@ class BeerControllerTest {
         ResultActions resultActions = mockMvc.perform(get("/api/v1/beer")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(testBeers.size())));
 
         printResultActions(resultActions);
     }
