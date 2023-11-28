@@ -17,8 +17,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -50,13 +50,33 @@ class BeerControllerTest {
 
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beer);
 
-        mockMvc.perform(post("/api/v1/beer")
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/beer")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
+        printResultActions(resultActions);
+
+    }
+
+    @Test
+    void testUpdateBeer() throws Exception {
+        Beer updatedBeer = beerServiceImpl.listBeers().get(0);
+        updatedBeer.setBeerName("updated beer name");
+
+        ResultActions resultActions = mockMvc.perform(put("/api/v1/beer/" + updatedBeer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedBeer)))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isNoContent());
+
+
+        verify(beerService).updateBeerById(updatedBeer.getId(), updatedBeer);
+
+        printResultActions(resultActions);
     }
 
     @Test
