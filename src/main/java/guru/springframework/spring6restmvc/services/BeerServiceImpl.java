@@ -89,4 +89,20 @@ public class BeerServiceImpl implements BeerService {
         beerMap.put(savedBeer.getId(), savedBeer);
         return savedBeer;
     }
+
+    @Override
+    public Beer updateBeerById(UUID beerId, Beer updatedBeer) {
+        Beer existingbeer = getBeerById(beerId);
+
+        existingbeer.setBeerName(updatedBeer.getBeerName());
+        existingbeer.setBeerStyle(updatedBeer.getBeerStyle());
+        existingbeer.setUpc(updatedBeer.getUpc());
+        existingbeer.setPrice(updatedBeer.getPrice());
+        existingbeer.setQuantityOnHand(updatedBeer.getQuantityOnHand());
+        existingbeer.setUpdateDate(LocalDateTime.now());
+
+        beerMap.replace(existingbeer.getId(), existingbeer);
+
+        return existingbeer;
+    }
 }
