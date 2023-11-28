@@ -62,7 +62,7 @@ class BeerControllerTest {
     }
 
     @Test
-    void testUpdateBeer() throws Exception {
+    void testUpdateBeerById() throws Exception {
         Beer updatedBeer = beerServiceImpl.listBeers().get(0);
         updatedBeer.setBeerName("updated beer name");
 
@@ -70,9 +70,7 @@ class BeerControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeer)))
-                .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isNoContent());
-
 
         verify(beerService).updateBeerById(updatedBeer.getId(), updatedBeer);
 
