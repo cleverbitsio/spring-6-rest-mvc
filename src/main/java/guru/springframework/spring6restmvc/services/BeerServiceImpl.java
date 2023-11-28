@@ -91,7 +91,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Beer updateBeerById(UUID beerId, Beer updatedBeer) {
+    public void updateBeerById(UUID beerId, Beer updatedBeer) {
         Beer existingbeer = getBeerById(beerId);
 
         existingbeer.setBeerName(updatedBeer.getBeerName());
@@ -102,7 +102,5 @@ public class BeerServiceImpl implements BeerService {
         existingbeer.setUpdateDate(LocalDateTime.now());
 
         beerMap.replace(existingbeer.getId(), existingbeer);
-
-        return existingbeer;
     }
 }
