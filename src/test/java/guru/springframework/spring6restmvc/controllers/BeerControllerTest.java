@@ -4,6 +4,7 @@ import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,17 +12,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.ArgumentMatchers.any;
+
+import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.UUID;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BeerController.class)
 class BeerControllerTest {
@@ -45,13 +44,16 @@ class BeerControllerTest {
 
         // previously Mockito was returning a null body and null content type
         // here we tell Mockito to return testBeer for any UUID object passed to the getBeerById method of the BeerService
-        // given any (any is a matcher) UUID object, we will return our testBeer object
-        given(beerService.getBeerById(any(UUID.class))).willReturn(testBeer);
+        // given the testBeer's id, we will return the testBeer object
+        // in other words given that specific UUID we will return testBeer
+        given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID())
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/beer/" + testBeer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
+                .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
 
         printResultActions(resultActions);
     }
