@@ -54,7 +54,7 @@ public class CustomerControllerTest {
                 .willReturn(customerServiceImpl.listCustomers());
 
 
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/customer")
+        ResultActions resultActions = mockMvc.perform(get(CustomerController.CUSTOMER_PATH)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -69,7 +69,7 @@ public class CustomerControllerTest {
         Customer testCustomer = customerServiceImpl.listCustomers().get(0);
         given(customerService.getCustomerById(testCustomer.getId())).willReturn(testCustomer);
 
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/customer/" + testCustomer.getId())
+        ResultActions resultActions = mockMvc.perform(get(CustomerController.CUSTOMER_PATH + "/" + testCustomer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -89,7 +89,7 @@ public class CustomerControllerTest {
 
         given(customerService.saveNewCustomer(any(Customer.class))).willReturn(customer);
 
-        ResultActions resultActions = mockMvc.perform(post("/api/v1/customer")
+        ResultActions resultActions = mockMvc.perform(post(CustomerController.CUSTOMER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customer)))
@@ -105,7 +105,7 @@ public class CustomerControllerTest {
         Customer customer = customerServiceImpl.listCustomers().get(0);
         customer.setCustomerName("updated via put");
 
-        ResultActions resultActions = mockMvc.perform(put("/api/v1/customer/" + customer.getId())
+        ResultActions resultActions = mockMvc.perform(put(CustomerController.CUSTOMER_PATH + "/" + customer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customer)))
@@ -121,7 +121,7 @@ public class CustomerControllerTest {
     void testDeleteCustomer() throws Exception {
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
-        ResultActions resultActions = mockMvc.perform(delete("/api/v1/customer/" + customer.getId())
+        ResultActions resultActions = mockMvc.perform(delete(CustomerController.CUSTOMER_PATH + "/" + customer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -141,7 +141,7 @@ public class CustomerControllerTest {
         customerMap.put("customerName", "New name");
 
 
-        ResultActions resultActions = mockMvc.perform(patch("/api/v1/customer/" + customer.getId())
+        ResultActions resultActions = mockMvc.perform(patch(CustomerController.CUSTOMER_PATH + "/" + customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customerMap)))
