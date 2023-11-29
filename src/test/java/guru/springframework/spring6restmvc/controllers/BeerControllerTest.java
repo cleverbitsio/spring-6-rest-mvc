@@ -26,7 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @WebMvcTest(BeerController.class)
@@ -40,6 +42,9 @@ class BeerControllerTest {
 
     @Captor
     ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Beer> beerArgumentCaptor;
 
     @MockBean
     BeerService beerService;
@@ -139,6 +144,30 @@ class BeerControllerTest {
         assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
 
         printResultActions(resultActions);
+    }
+
+    @Test
+    void testPatchBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        // Use a map object to create some json to patch with
+        // this needs to be used with jackson to convert it to json
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName","New Name");
+
+        ResultActions resultActions = mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerMap)))
+                .andExpect(status().isNoContent());
+
+        verify(beerService).updateBeerPatchById(uuidArgumentCaptor.capture(), beerArgumentCaptor.capture());
+
+        assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(beerMap.get("beerName")).isEqualTo(beerArgumentCaptor.getValue().getBeerName());
+
+        printResultActions(resultActions);
+
     }
 
     private static void printResultActions(ResultActions resultActions) throws UnsupportedEncodingException {
