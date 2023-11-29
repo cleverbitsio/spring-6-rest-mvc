@@ -22,13 +22,13 @@ public class BeerController {
     protected static final String BEER_PATH = "/api/v1/beer";
     protected static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
 
-    @RequestMapping(value = BEER_PATH, method = RequestMethod.GET)
+    @GetMapping(BEER_PATH)
     public List<Beer> listBeers() {
         log.debug("in listBeers - in controller!");
         return beerService.listBeers();
     }
 
-    @RequestMapping(value = BEER_PATH_ID, method = RequestMethod.GET)
+    @GetMapping(BEER_PATH_ID)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
         log.debug("Get Beer by Id - in controller! Id: " + beerId);
         return beerService.getBeerById(beerId);
