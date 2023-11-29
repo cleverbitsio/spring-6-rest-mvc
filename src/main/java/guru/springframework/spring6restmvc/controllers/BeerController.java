@@ -16,23 +16,25 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/beer")
 public class BeerController {
     private final BeerService beerService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    protected static final String BEER_PATH = "/api/v1/beer";
+    protected static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
+
+    @RequestMapping(value = BEER_PATH, method = RequestMethod.GET)
     public List<Beer> listBeers() {
         log.debug("in listBeers - in controller!");
         return beerService.listBeers();
     }
 
-    @RequestMapping(value = "/{beerId}", method = RequestMethod.GET)
+    @RequestMapping(value = BEER_PATH_ID, method = RequestMethod.GET)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
         log.debug("Get Beer by Id - in controller! Id: " + beerId);
         return beerService.getBeerById(beerId);
     }
 
-    @PostMapping
+    @PostMapping(BEER_PATH)
     public ResponseEntity saveNewBeer(@RequestBody Beer beer) {
         log.debug("in saveNewBeer - in controller!");
         Beer savedBeer = beerService.saveNewBeer(beer);
@@ -41,21 +43,21 @@ public class BeerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{beerId}")
+    @PutMapping(BEER_PATH_ID)
     public ResponseEntity updateBeerById(@PathVariable UUID beerId, @RequestBody Beer updatedBeer) {
         log.debug("in updateBeerById - in controller! Id: " + beerId);
         beerService.updateBeerById(beerId, updatedBeer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{beerId}")
+    @DeleteMapping(BEER_PATH_ID)
     public ResponseEntity deleteBeerById(@PathVariable UUID beerId) {
         log.debug("in deleteBeerById - in controller! Id: " + beerId);
         beerService.deleteBeerById(beerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{beerId}")
+    @PatchMapping(BEER_PATH_ID)
     public ResponseEntity updateBeerPatchById(@PathVariable UUID beerId, @RequestBody Beer updatedBeer) {
         log.debug("in updateBeerPatchById - in controller! Id: " + beerId);
         beerService.updateBeerPatchById(beerId, updatedBeer);
