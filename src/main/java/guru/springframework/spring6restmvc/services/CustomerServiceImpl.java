@@ -57,8 +57,8 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer saveNewCustomer(Customer customer) {
         Customer savedCustomer = Customer.builder()
                 .id(UUID.randomUUID())
+                .version(customer.getVersion())
                 .customerName(customer.getCustomerName())
-                .version(1)
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
                 .build();

@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.UUID;
 
 @WebMvcTest(BeerController.class)
 class BeerControllerTest {
@@ -45,7 +46,7 @@ class BeerControllerTest {
     void testCreateNewBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().get(0);
         // reset the id and version so that we can re-use beer as a new beer object
-        beer.setId(null);
+        beer.setId(UUID.randomUUID());
         beer.setVersion(null);
 
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beer);
@@ -121,7 +122,8 @@ class BeerControllerTest {
     }
 
     private static void printResultActions(ResultActions resultActions) throws UnsupportedEncodingException {
-        System.out.println(resultActions.andReturn().getResponse().getContentAsString());
+        System.out.println("Response Content: " + resultActions.andReturn().getResponse().getContentAsString());
+        System.out.println("Status Code: " + resultActions.andReturn().getResponse().getStatus());
     }
 
 }
