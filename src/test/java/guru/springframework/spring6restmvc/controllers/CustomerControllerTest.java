@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -38,6 +40,8 @@ public class CustomerControllerTest {
     @Captor
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
 
     @MockBean
     CustomerService customerService;
@@ -123,6 +127,30 @@ public class CustomerControllerTest {
 
         verify(customerService).deleteCustomerById(uuidArgumentCaptor.capture());
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+
+        printResultActions(resultActions);
+    }
+
+    @Test
+    void testPatchCustomer() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        // Use a map object to create some json to patch with
+        // this needs to be used with jackson to convert it to json
+        Map<String, Object> customerMap = new HashMap<>();
+        customerMap.put("customerName", "New name");
+
+
+        ResultActions resultActions = mockMvc.perform(patch("/api/v1/customer/" + customer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerMap)))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).updateCustomerPatchById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
+
+        assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(customerMap.get("customerName")).isEqualTo(customerArgumentCaptor.getValue().getCustomerName());
 
         printResultActions(resultActions);
     }
