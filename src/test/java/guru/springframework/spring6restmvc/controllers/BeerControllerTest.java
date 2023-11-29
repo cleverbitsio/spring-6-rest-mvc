@@ -77,7 +77,7 @@ class BeerControllerTest {
         Beer updatedBeer = beerServiceImpl.listBeers().get(0);
         updatedBeer.setBeerName("updated beer name");
 
-        ResultActions resultActions = mockMvc.perform(put(BeerController.BEER_PATH + "/" + updatedBeer.getId())
+        ResultActions resultActions = mockMvc.perform(put(BeerController.BEER_PATH_ID, updatedBeer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeer)))
@@ -101,7 +101,7 @@ class BeerControllerTest {
         // in other words given that specific UUID we will return testBeer
         given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
-        ResultActions resultActions = mockMvc.perform(get(BeerController.BEER_PATH + "/" + testBeer.getId())
+        ResultActions resultActions = mockMvc.perform(get(BeerController.BEER_PATH_ID, testBeer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -135,7 +135,7 @@ class BeerControllerTest {
     void testDeleteBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
-        ResultActions resultActions = mockMvc.perform(delete(BeerController.BEER_PATH + "/" + beer.getId())
+        ResultActions resultActions = mockMvc.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -154,7 +154,7 @@ class BeerControllerTest {
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName","New Name");
 
-        ResultActions resultActions = mockMvc.perform(patch(BeerController.BEER_PATH + "/" + beer.getId())
+        ResultActions resultActions = mockMvc.perform(patch(BeerController.BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beerMap)))
