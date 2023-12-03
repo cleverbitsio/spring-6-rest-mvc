@@ -91,7 +91,7 @@ class BeerControllerTest {
     @Test
     void testGetBeerByIdNotFound() throws Exception {
 
-        given(beerServiceImpl.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+        given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
 
         mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
                 .andExpect(status().isNotFound());
