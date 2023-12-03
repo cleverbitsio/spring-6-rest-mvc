@@ -16,21 +16,33 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 public class BeerController {
+
+    public static final String BEER_PATH = "/api/v1/beer";
+    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
+
     private final BeerService beerService;
 
-    protected static final String BEER_PATH = "/api/v1/beer";
-    protected static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
+    @PatchMapping(BEER_PATH_ID)
+    public ResponseEntity updateBeerPatchById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
+        log.debug("in updateBeerPatchById - in controller! Id: " + beerId);
 
-    @GetMapping(BEER_PATH)
-    public List<Beer> listBeers() {
-        log.debug("in listBeers - in controller!");
-        return beerService.listBeers();
+        beerService.patchBeerById(beerId, beer);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(BEER_PATH_ID)
-    public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
-        log.debug("Get Beer by Id - in controller! Id: " + beerId);
-        return beerService.getBeerById(beerId);
+    @DeleteMapping(BEER_PATH_ID)
+    public ResponseEntity deleteBeerById(@PathVariable("beerId") UUID beerId) {
+        log.debug("in deleteById - in controller! Id: " + beerId);
+        beerService.deleteBeerById(beerId);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping(BEER_PATH_ID)
+    public ResponseEntity updateBeerById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
+        log.debug("in updateBeerById - in controller! Id: " + beerId);
+        beerService.updateBeerById(beerId, beer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(BEER_PATH)
@@ -38,28 +50,28 @@ public class BeerController {
         log.debug("in saveNewBeer - in controller!");
         Beer savedBeer = beerService.saveNewBeer(beer);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location",  "/api/v1/beer/" + savedBeer.getId());
+        headers.add("Location",  BEER_PATH + "/" + savedBeer.getId().toString());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(BEER_PATH_ID)
-    public ResponseEntity updateBeerById(@PathVariable UUID beerId, @RequestBody Beer updatedBeer) {
-        log.debug("in updateBeerById - in controller! Id: " + beerId);
-        beerService.updateBeerById(beerId, updatedBeer);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    @GetMapping(value = BEER_PATH)
+    public List<Beer> listBeers() {
+        log.debug("in listBeers - in controller!");
+        return beerService.listBeers();
     }
 
-    @DeleteMapping(BEER_PATH_ID)
-    public ResponseEntity deleteBeerById(@PathVariable UUID beerId) {
-        log.debug("in deleteBeerById - in controller! Id: " + beerId);
-        beerService.deleteBeerById(beerId);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    @GetMapping(value = BEER_PATH_ID)
+    public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
+
+        log.debug("Get Beer by Id - in controller! Id: " + beerId);
+
+        return beerService.getBeerById(beerId);
     }
 
-    @PatchMapping(BEER_PATH_ID)
-    public ResponseEntity updateBeerPatchById(@PathVariable UUID beerId, @RequestBody Beer updatedBeer) {
-        log.debug("in updateBeerPatchById - in controller! Id: " + beerId);
-        beerService.updateBeerPatchById(beerId, updatedBeer);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
+
+
+
+
+
+
 }

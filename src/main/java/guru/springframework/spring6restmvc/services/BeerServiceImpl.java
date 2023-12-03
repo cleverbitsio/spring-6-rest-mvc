@@ -113,7 +113,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void updateBeerPatchById(UUID beerId, Beer updatedBeer) {
+    public void patchBeerById(UUID beerId, Beer updatedBeer) {
 
         log.debug("in updateBeerPatchById - in service! Id: " + beerId);
 
