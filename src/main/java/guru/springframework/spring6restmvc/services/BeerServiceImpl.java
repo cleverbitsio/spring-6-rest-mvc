@@ -4,6 +4,7 @@ import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -60,6 +61,60 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
+    public void patchBeerById(UUID beerId, Beer beer) {
+
+        log.debug("in updateBeerPatchById - in service! Id: " + beerId);
+
+        Beer existing = getBeerById(beerId);
+
+        if(StringUtils.hasText(beer.getBeerName())) {
+            existing.setBeerName(beer.getBeerName());
+        }
+
+        if(beer.getBeerStyle() != null) {
+            existing.setBeerStyle(beer.getBeerStyle());
+        }
+
+        if(beer.getPrice() != null) {
+            existing.setPrice(beer.getPrice());
+        }
+
+        if(beer.getQuantityOnHand() != null) {
+            existing.setQuantityOnHand(beer.getQuantityOnHand());
+        }
+
+        if(StringUtils.hasText(beer.getUpc())) {
+            existing.setUpc(beer.getUpc());
+        }
+
+        existing.setUpdateDate(LocalDateTime.now());
+        beerMap.replace(existing.getId(), existing);
+
+    }
+
+    @Override
+    public void deleteBeerById(UUID beerId) {
+        log.debug("in deleteBeerById - in service! Id: " + beerId);
+        beerMap.remove(beerId);
+    }
+
+    @Override
+    public void updateBeerById(UUID beerId, Beer beer) {
+
+        log.debug("in updateBeerById - in service! Id: " + beerId);
+        Beer existing = getBeerById(beerId);
+
+        existing.setBeerName(beer.getBeerName());
+        existing.setBeerStyle(beer.getBeerStyle());
+        existing.setUpc(beer.getUpc());
+        existing.setPrice(beer.getPrice());
+        existing.setQuantityOnHand(beer.getQuantityOnHand());
+        existing.setUpdateDate(LocalDateTime.now());
+
+        beerMap.replace(existing.getId(), existing);
+    }
+
+    @Override
     public List<Beer> listBeers() {
         log.debug("in listBeers - in service!");
         return new ArrayList<>(beerMap.values());
@@ -90,58 +145,4 @@ public class BeerServiceImpl implements BeerService {
         return savedBeer;
     }
 
-    @Override
-    public void updateBeerById(UUID beerId, Beer updatedBeer) {
-
-        log.debug("in updateBeerById - in service! Id: " + beerId);
-        Beer existingbeer = getBeerById(beerId);
-
-        existingbeer.setBeerName(updatedBeer.getBeerName());
-        existingbeer.setBeerStyle(updatedBeer.getBeerStyle());
-        existingbeer.setUpc(updatedBeer.getUpc());
-        existingbeer.setPrice(updatedBeer.getPrice());
-        existingbeer.setQuantityOnHand(updatedBeer.getQuantityOnHand());
-        existingbeer.setUpdateDate(LocalDateTime.now());
-
-        beerMap.replace(existingbeer.getId(), existingbeer);
-    }
-
-    @Override
-    public void deleteBeerById(UUID beerId) {
-        log.debug("in deleteBeerById - in service! Id: " + beerId);
-        beerMap.remove(beerId);
-    }
-
-    @Override
-    public void patchBeerById(UUID beerId, Beer updatedBeer) {
-
-        log.debug("in updateBeerPatchById - in service! Id: " + beerId);
-
-        Beer existingbeer = getBeerById(beerId);
-
-        if(updatedBeer.getBeerName() != null) {
-            existingbeer.setBeerName(updatedBeer.getBeerName());
-        }
-
-        if(updatedBeer.getBeerStyle() != null) {
-            existingbeer.setBeerStyle(updatedBeer.getBeerStyle());
-        }
-
-        if(updatedBeer.getUpc() != null) {
-            existingbeer.setUpc(updatedBeer.getUpc());
-        }
-
-        if(updatedBeer.getPrice() != null) {
-            existingbeer.setPrice(updatedBeer.getPrice());
-        }
-
-        if(updatedBeer.getQuantityOnHand() != null) {
-            existingbeer.setQuantityOnHand(updatedBeer.getQuantityOnHand());
-        }
-
-        existingbeer.setUpdateDate(LocalDateTime.now());
-
-        beerMap.replace(existingbeer.getId(), existingbeer);
-
-    }
 }
