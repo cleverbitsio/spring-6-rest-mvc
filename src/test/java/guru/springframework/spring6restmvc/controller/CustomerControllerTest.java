@@ -50,15 +50,15 @@ public class CustomerControllerTest {
 
     @Test
     void testListCustomer() throws Exception {
-        given(customerService.listCustomers())
-                .willReturn(customerServiceImpl.listCustomers());
+        given(customerService.getAllCustomers())
+                .willReturn(customerServiceImpl.getAllCustomers());
 
 
         ResultActions resultActions = mockMvc.perform(get(CustomerController.CUSTOMER_PATH)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()" , is(customerService.listCustomers().size())));
+                .andExpect(jsonPath("$.length()" , is(customerService.getAllCustomers().size())));
 
         printResultActions(resultActions);
 
@@ -74,7 +74,7 @@ public class CustomerControllerTest {
 
     @Test
     void testGetCustomerById() throws Exception{
-        Customer testCustomer = customerServiceImpl.listCustomers().get(0);
+        Customer testCustomer = customerServiceImpl.getAllCustomers().get(0);
         given(customerService.getCustomerById(testCustomer.getId())).willReturn(testCustomer);
 
         ResultActions resultActions = mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID, testCustomer.getId())
@@ -90,7 +90,7 @@ public class CustomerControllerTest {
 
     @Test
     void testCreateNewCustomer() throws Exception {
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        Customer customer = customerServiceImpl.getAllCustomers().get(0);
         customer.setId(UUID.randomUUID());
         customer.setVersion(null);
         customer.setCustomerName("created by post");
@@ -110,7 +110,7 @@ public class CustomerControllerTest {
 
     @Test
     void testUpdateCustomerById() throws Exception {
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        Customer customer = customerServiceImpl.getAllCustomers().get(0);
         customer.setCustomerName("updated via put");
 
         ResultActions resultActions = mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId())
@@ -127,7 +127,7 @@ public class CustomerControllerTest {
 
     @Test
     void testDeleteCustomer() throws Exception {
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        Customer customer = customerServiceImpl.getAllCustomers().get(0);
 
         ResultActions resultActions = mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -141,7 +141,7 @@ public class CustomerControllerTest {
 
     @Test
     void testPatchCustomer() throws Exception {
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        Customer customer = customerServiceImpl.getAllCustomers().get(0);
 
         // Use a map object to create some json to patch with
         // this needs to be used with jackson to convert it to json
@@ -155,7 +155,7 @@ public class CustomerControllerTest {
                         .content(objectMapper.writeValueAsString(customerMap)))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).updateCustomerPatchById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
+        verify(customerService).patchCustomerById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
 
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
         assertThat(customerMap.get("customerName")).isEqualTo(customerArgumentCaptor.getValue().getCustomerName());

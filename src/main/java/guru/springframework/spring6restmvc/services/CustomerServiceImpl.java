@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> listCustomers() {
+    public List<Customer> getAllCustomers() {
         return new ArrayList<>(customerMap.values());
     }
 
@@ -80,7 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void updateCustomerPatchById(UUID customerId, Customer updatedCustomer) {
+    public void patchCustomerById(UUID customerId, Customer updatedCustomer) {
         Customer existingCustomer = getCustomerById(customerId);
         if(existingCustomer.getCustomerName() != null) {
             existingCustomer.setCustomerName(updatedCustomer.getCustomerName());
