@@ -165,6 +165,7 @@ class BeerControllerTest {
         // we don't want the service to throw an exception
         // instead we want the controller to throw it
         // given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+        // we are now returning an optional of empty and moving the logic handling the exception to the controller
         given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
 
         mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
