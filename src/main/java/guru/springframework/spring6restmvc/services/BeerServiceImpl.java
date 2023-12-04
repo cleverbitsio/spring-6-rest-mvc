@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Created by jt, Spring Framework Guru.
+ */
 @Slf4j
 @Service
 public class BeerServiceImpl implements BeerService {
@@ -17,6 +20,7 @@ public class BeerServiceImpl implements BeerService {
     private final Map<UUID, Beer> beerMap;
 
     public BeerServiceImpl() {
+        this.beerMap = new HashMap<>();
 
         Beer beer1 = Beer.builder()
                 .id(UUID.randomUUID())
@@ -54,7 +58,6 @@ public class BeerServiceImpl implements BeerService {
                 .updateDate(LocalDateTime.now())
                 .build();
 
-        beerMap = new HashMap<>();
         beerMap.put(beer1.getId(), beer1);
         beerMap.put(beer2.getId(), beer2);
         beerMap.put(beer3.getId(), beer3);
@@ -65,7 +68,7 @@ public class BeerServiceImpl implements BeerService {
 
         log.debug("in updateBeerPatchById - in service! Id: " + beerId);
 
-        Beer existing = getBeerById(beerId);
+        Beer existing = beerMap.get(beerId);
 
         if(StringUtils.hasText(beer.getBeerName())) {
             existing.setBeerName(beer.getBeerName());
@@ -102,6 +105,7 @@ public class BeerServiceImpl implements BeerService {
     public void updateBeerById(UUID beerId, Beer beer) {
 
         log.debug("in updateBeerById - in service! Id: " + beerId);
+
         Beer existing = getBeerById(beerId);
 
         existing.setBeerName(beer.getBeerName());
