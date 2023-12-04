@@ -16,7 +16,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerServiceImpl() {
         Customer customer1 = Customer.builder()
                 .id(UUID.randomUUID())
-                .customerName("terry")
+                .name("terry")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
@@ -24,7 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer2 = Customer.builder()
                 .id(UUID.randomUUID())
-                .customerName("terry2")
+                .name("terry2")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
@@ -32,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer3 = Customer.builder()
                 .id(UUID.randomUUID())
-                .customerName("terry3")
+                .name("terry3")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
@@ -48,8 +48,8 @@ public class CustomerServiceImpl implements CustomerService {
     public void patchCustomerById(UUID customerId, Customer customer) {
         Customer existing = getCustomerById(customerId);
 
-        if(StringUtils.hasText(existing.getCustomerName())) {
-            existing.setCustomerName(customer.getCustomerName());
+        if(StringUtils.hasText(existing.getName())) {
+            existing.setName(customer.getName());
         }
         existing.setLastModifiedDate(LocalDateTime.now());
         customerMap.replace(customerId, existing);
@@ -63,7 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void updateCustomerById(UUID customerId, Customer customer) {
         Customer existing = getCustomerById(customerId);
-        existing.setCustomerName(customer.getCustomerName());
+        existing.setName(customer.getName());
         existing.setLastModifiedDate(LocalDateTime.now());
         customerMap.replace(customerId, existing);
     }
@@ -73,7 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
         Customer savedCustomer = Customer.builder()
                 .id(UUID.randomUUID())
                 .version(customer.getVersion())
-                .customerName(customer.getCustomerName())
+                .name(customer.getName())
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
                 .build();
