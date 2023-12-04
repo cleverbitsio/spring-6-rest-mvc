@@ -17,7 +17,7 @@ import java.util.*;
 @Service
 public class BeerServiceImpl implements BeerService {
 
-    private final Map<UUID, Beer> beerMap;
+    private Map<UUID, Beer> beerMap;
 
     public BeerServiceImpl() {
         this.beerMap = new HashMap<>();
@@ -106,12 +106,12 @@ public class BeerServiceImpl implements BeerService {
 
         log.debug("in updateBeerById - in service! Id: " + beerId);
 
-        Beer existing = getBeerById(beerId);
+        Beer existing = beerMap.get(beerId);
 
         existing.setBeerName(beer.getBeerName());
         existing.setBeerStyle(beer.getBeerStyle());
-        existing.setUpc(beer.getUpc());
         existing.setPrice(beer.getPrice());
+        existing.setUpc(beer.getUpc());
         existing.setQuantityOnHand(beer.getQuantityOnHand());
         existing.setUpdateDate(LocalDateTime.now());
 
@@ -137,13 +137,13 @@ public class BeerServiceImpl implements BeerService {
         Beer savedBeer = Beer.builder()
                 .id(UUID.randomUUID())
                 .version(beer.getVersion())
-                .beerName(beer.getBeerName())
-                .beerStyle(beer.getBeerStyle())
-                .upc(beer.getUpc())
-                .price(beer.getPrice())
-                .quantityOnHand(beer.getQuantityOnHand())
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
+                .beerName(beer.getBeerName())
+                .beerStyle(beer.getBeerStyle())
+                .quantityOnHand(beer.getQuantityOnHand())
+                .upc(beer.getUpc())
+                .price(beer.getPrice())
                 .build();
         beerMap.put(savedBeer.getId(), savedBeer);
         return savedBeer;
