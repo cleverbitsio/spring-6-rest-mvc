@@ -93,7 +93,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void deleteBeerById(UUID beerId) {
+    public void deleteById(UUID beerId) {
         log.debug("in deleteBeerById - in service! Id: " + beerId);
         beerMap.remove(beerId);
     }

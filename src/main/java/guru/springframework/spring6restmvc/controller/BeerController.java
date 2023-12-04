@@ -32,14 +32,14 @@ public class BeerController {
     }
 
     @DeleteMapping(BEER_PATH_ID)
-    public ResponseEntity deleteBeerById(@PathVariable("beerId") UUID beerId) {
+    public ResponseEntity deleteById(@PathVariable("beerId") UUID beerId) {
         log.debug("in deleteById - in controller! Id: " + beerId);
-        beerService.deleteBeerById(beerId);
+        beerService.deleteById(beerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(BEER_PATH_ID)
-    public ResponseEntity updateBeerById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
+    public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
         log.debug("in updateBeerById - in controller! Id: " + beerId);
         beerService.updateBeerById(beerId, beer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
