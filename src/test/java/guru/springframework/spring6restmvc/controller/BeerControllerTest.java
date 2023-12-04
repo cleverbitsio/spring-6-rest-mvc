@@ -100,7 +100,7 @@ class BeerControllerTest {
     }
 
     @Test
-    void testUpdateBeerById() throws Exception {
+    void testUpdateBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().get(0);
         beer.setBeerName("updated beer name");
 
@@ -151,15 +151,15 @@ class BeerControllerTest {
         ResultActions resultActions =
                 mockMvc.perform(get(BeerController.BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()", is(testBeers.size())));
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(jsonPath("$.length()", is(testBeers.size())));
 
         printResultActions(resultActions);
     }
 
     @Test
-    void testGetBeerByIdNotFound() throws Exception {
+    void getBeerByIdNotFound() throws Exception {
 
         given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
 
@@ -168,8 +168,7 @@ class BeerControllerTest {
     }
 
     @Test
-    void testGetBeerById() throws Exception {
-
+    void getBeerById() throws Exception {
         // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
         // here we get the first one from the list
         Beer testBeer = beerServiceImpl.listBeers().get(0);
