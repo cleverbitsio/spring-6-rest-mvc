@@ -175,7 +175,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(customer.getId().toString())))
-                .andExpect(jsonPath("$.customerName" , is(customer.getName())));
+                .andExpect(jsonPath("$.name" , is(customer.getName())));
 
         printResultActions(resultActions);
 

@@ -57,10 +57,10 @@ public class CustomerController {
         return customerService.getAllCustomers();
     }
 
-    @GetMapping(CUSTOMER_PATH_ID)
-    public Customer getCustomerById(@PathVariable("customerId") UUID customerId) {
+    @GetMapping(value = CUSTOMER_PATH_ID)
+    public Customer getCustomerById(@PathVariable("customerId") UUID id) {
         log.debug("Get Customer by Id - in controller");
-        return customerService.getCustomerById(customerId);
+        return customerService.getCustomerById(id);
     }
 
 }

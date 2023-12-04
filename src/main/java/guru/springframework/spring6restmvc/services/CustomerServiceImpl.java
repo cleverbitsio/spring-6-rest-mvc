@@ -19,7 +19,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .name("terry")
                 .version(1)
                 .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
                 .build();
 
         Customer customer2 = Customer.builder()
@@ -27,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .name("terry2")
                 .version(1)
                 .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
                 .build();
 
         Customer customer3 = Customer.builder()
@@ -35,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .name("terry3")
                 .version(1)
                 .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
                 .build();
 
         customerMap = new HashMap<>();
@@ -51,7 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
         if(StringUtils.hasText(existing.getName())) {
             existing.setName(customer.getName());
         }
-        existing.setLastModifiedDate(LocalDateTime.now());
+        existing.setUpdateDate(LocalDateTime.now());
         customerMap.replace(customerId, existing);
     }
 
@@ -64,7 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
     public void updateCustomerById(UUID customerId, Customer customer) {
         Customer existing = getCustomerById(customerId);
         existing.setName(customer.getName());
-        existing.setLastModifiedDate(LocalDateTime.now());
+        existing.setUpdateDate(LocalDateTime.now());
         customerMap.replace(customerId, existing);
     }
 
@@ -75,7 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .version(customer.getVersion())
                 .name(customer.getName())
                 .createdDate(LocalDateTime.now())
-                .lastModifiedDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
                 .build();
         customerMap.put(savedCustomer.getId(), savedCustomer);
         return savedCustomer;
