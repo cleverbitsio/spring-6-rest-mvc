@@ -49,7 +49,7 @@ public class BeerController {
     }
 
     @PostMapping(BEER_PATH)
-    public ResponseEntity saveNewBeer(@RequestBody Beer beer) {
+    public ResponseEntity handlePost(@RequestBody Beer beer){
         log.debug("in saveNewBeer - in controller!");
         Beer savedBeer = beerService.saveNewBeer(beer);
         HttpHeaders headers = new HttpHeaders();
