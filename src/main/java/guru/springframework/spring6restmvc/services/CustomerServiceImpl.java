@@ -8,15 +8,18 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Created by jt, Spring Framework Guru.
+ */
 @Service
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private final Map<UUID, Customer> customerMap;
+    private Map<UUID, Customer> customerMap;
     public CustomerServiceImpl() {
         Customer customer1 = Customer.builder()
                 .id(UUID.randomUUID())
-                .name("terry")
+                .name("Customer 1")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
@@ -24,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer2 = Customer.builder()
                 .id(UUID.randomUUID())
-                .name("terry2")
+                .name("Customer 2")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
@@ -32,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer3 = Customer.builder()
                 .id(UUID.randomUUID())
-                .name("terry3")
+                .name("Customer 3")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
@@ -46,9 +49,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void patchCustomerById(UUID customerId, Customer customer) {
-        Customer existing = getCustomerById(customerId);
+        Customer existing = customerMap.get(customerId);
 
-        if(StringUtils.hasText(existing.getName())) {
+        if (StringUtils.hasText(customer.getName())) {
             existing.setName(customer.getName());
         }
         existing.setUpdateDate(LocalDateTime.now());
@@ -62,7 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void updateCustomerById(UUID customerId, Customer customer) {
-        Customer existing = getCustomerById(customerId);
+        Customer existing = customerMap.get(customerId);
         existing.setName(customer.getName());
         existing.setUpdateDate(LocalDateTime.now());
         customerMap.replace(customerId, existing);
@@ -73,17 +76,12 @@ public class CustomerServiceImpl implements CustomerService {
         Customer savedCustomer = Customer.builder()
                 .id(UUID.randomUUID())
                 .version(customer.getVersion())
-                .name(customer.getName())
-                .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
+                .createdDate(LocalDateTime.now())
+                .name(customer.getName())
                 .build();
         customerMap.put(savedCustomer.getId(), savedCustomer);
         return savedCustomer;
-    }
-
-    @Override
-    public List<Customer> getAllCustomers() {
-        return new ArrayList<>(customerMap.values());
     }
 
     @Override
@@ -91,5 +89,9 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMap.get(id);
     }
 
+    @Override
+    public List<Customer> getAllCustomers() {
+        return new ArrayList<>(customerMap.values());
+    }
 
 }
