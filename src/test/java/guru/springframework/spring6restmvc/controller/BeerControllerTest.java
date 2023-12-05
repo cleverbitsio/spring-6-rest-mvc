@@ -1,7 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import guru.springframework.spring6restmvc.model.Beer;
+import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@ class BeerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Beer> beerArgumentCaptor;
+    ArgumentCaptor<BeerDTO> beerArgumentCaptor;
 
     // Here we are going to tell Mockito how to return actual data
     // using the BeerServiceImpl class - since it already contains data which we manually mocked earlier in the course
@@ -61,7 +61,7 @@ class BeerControllerTest {
 
     @Test
     void testPatchBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         // Use a map object to create some json to patch with
         // this needs to be used with jackson to convert it to json
@@ -86,7 +86,7 @@ class BeerControllerTest {
 
     @Test
     void testDeleteBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         ResultActions resultActions =
                 mockMvc.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
@@ -102,7 +102,7 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
         beer.setBeerName("updated beer name");
 
         ResultActions resultActions =
@@ -119,12 +119,12 @@ class BeerControllerTest {
 
     @Test
     void testCreateNewBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
         // reset the id and version so that we can re-use beer as a new beer object
         beer.setId(UUID.randomUUID());
         beer.setVersion(null);
 
-        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beer);
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beer);
 
         ResultActions resultActions =
                 mockMvc.perform(post(BeerController.BEER_PATH)
@@ -142,7 +142,7 @@ class BeerControllerTest {
     void testListBeers() throws Exception {
 
         // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
-        List<Beer> testBeers = beerServiceImpl.listBeers();
+        List<BeerDTO> testBeers = beerServiceImpl.listBeers();
 
         // previously Mockito was returning a null body and null content type
         // here we tell Mockito to return testBeers when we call the BeerService listBeers method
@@ -176,7 +176,7 @@ class BeerControllerTest {
     void getBeerById() throws Exception {
         // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
         // here we get the first one from the list
-        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
 
         // previously Mockito was returning a null body and null content type
         // here we tell Mockito to return testBeer for any UUID object passed to the getBeerById method of the BeerService
