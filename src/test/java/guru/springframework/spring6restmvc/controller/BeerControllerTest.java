@@ -66,7 +66,7 @@ class BeerControllerTest {
         // Use a map object to create some json to patch with
         // this needs to be used with jackson to convert it to json
         Map<String, Object> beerMap = new HashMap<>();
-        beerMap.put("beerName","New Name");
+        beerMap.put("beerName", "New Name");
 
         ResultActions resultActions =
                 mockMvc.perform(patch(BeerController.BEER_PATH_ID, beer.getId())
@@ -121,7 +121,7 @@ class BeerControllerTest {
     void testCreateNewBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
         // reset the id and version so that we can re-use beer as a new beer object
-        beer.setId(UUID.randomUUID());
+        beer.setId(null);
         beer.setVersion(null);
 
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beer);
