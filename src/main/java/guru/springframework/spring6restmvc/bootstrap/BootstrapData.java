@@ -7,6 +7,7 @@ import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import guru.springframework.spring6restmvc.repositories.CustomerRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class BootstrapData implements CommandLineRunner {
 
     @Getter
@@ -29,6 +31,7 @@ public class BootstrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        log.debug("---------- in BootstrapData run method");
         loadBeerData();
         loadCustomerData();
     }
@@ -36,7 +39,7 @@ public class BootstrapData implements CommandLineRunner {
     private void loadBeerData() {
         if (beerRepository.count() == 0){
             Beer beer1 = Beer.builder()
-                    .beerName("Galaxy Cat")
+                    .beerName("Galaxy Cat from JPA")
                     .beerStyle(BeerStyle.PALE_ALE)
                     .upc("12356")
                     .price(new BigDecimal("12.99"))
@@ -46,7 +49,7 @@ public class BootstrapData implements CommandLineRunner {
                     .build();
 
             Beer beer2 = Beer.builder()
-                    .beerName("Crank")
+                    .beerName("Crank from JPA")
                     .beerStyle(BeerStyle.PALE_ALE)
                     .upc("12356222")
                     .price(new BigDecimal("11.99"))
@@ -56,7 +59,7 @@ public class BootstrapData implements CommandLineRunner {
                     .build();
 
             Beer beer3 = Beer.builder()
-                    .beerName("Sunshine City")
+                    .beerName("Sunshine City from JPA")
                     .beerStyle(BeerStyle.IPA)
                     .upc("12356")
                     .price(new BigDecimal("13.99"))
@@ -77,7 +80,7 @@ public class BootstrapData implements CommandLineRunner {
         if (customerRepository.count() == 0) {
             Customer customer1 = Customer.builder()
                     .id(UUID.randomUUID())
-                    .name("Customer 1")
+                    .name("Customer 1 from JPA")
                     .version(1)
                     .createdDate(LocalDateTime.now())
                     .updateDate(LocalDateTime.now())
@@ -85,7 +88,7 @@ public class BootstrapData implements CommandLineRunner {
 
             Customer customer2 = Customer.builder()
                     .id(UUID.randomUUID())
-                    .name("Customer 2")
+                    .name("Customer 2 from JPA")
                     .version(1)
                     .createdDate(LocalDateTime.now())
                     .updateDate(LocalDateTime.now())
@@ -93,7 +96,7 @@ public class BootstrapData implements CommandLineRunner {
 
             Customer customer3 = Customer.builder()
                     .id(UUID.randomUUID())
-                    .name("Customer 3")
+                    .name("Customer 3 from JPA")
                     .version(1)
                     .createdDate(LocalDateTime.now())
                     .updateDate(LocalDateTime.now())
