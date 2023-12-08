@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
+import guru.springframework.spring6restmvc.entities.Customer;
 import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.repositories.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -42,5 +43,16 @@ class CustomerControllerIT {
         log.debug("dtos.size() = " + dtos.size());
         log.debug("customerRepository.count() = " + customerRepository.count());
         assertThat(dtos.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetById() {
+        Customer customer = customerRepository.findAll().get(0);
+        log.debug("customer.getId() = " + customer.getId());
+
+        CustomerDTO customerDTO = customerController.getCustomerById(customer.getId());
+        log.debug("dto.getId() = " + customerDTO.getId());
+
+        assertThat(customerDTO).isNotNull();
     }
 }
