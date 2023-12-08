@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,14 +18,29 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class CustomerControllerIT {
 
     @Autowired
-    CustomerController controller;
-
-    @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    CustomerController customerController;
+
+    @Rollback
+    @Transactional
     @Test
-    void testGetCustomers() {
-        List<CustomerDTO> dtos = controller.listAllCustomers();
+    void testListAllEmptyList() {
+        customerRepository.deleteAll();
+        List<CustomerDTO> dtos = customerController.listAllCustomers();
+
+        log.debug("dtos.size() = " + dtos.size());
+        log.debug("customerRepository.count() = " + customerRepository.count());
+
+        assertThat(dtos.size()).isEqualTo(0);
+    }
+
+    @Test
+    void testListAll() {
+        List<CustomerDTO> dtos = customerController.listAllCustomers();
+        log.debug("dtos.size() = " + dtos.size());
+        log.debug("customerRepository.count() = " + customerRepository.count());
         assertThat(dtos.size()).isEqualTo(3);
     }
 }

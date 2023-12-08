@@ -89,7 +89,7 @@ class BeerControllerIT {
         log.debug("dtos.size() = " + dtos.size());
         log.debug("beerRepository.count() = " + beerRepository.count());
 
-        assertThat(dtos.size()).isEqualTo(beerRepository.count());
+        assertThat(dtos.size()).isEqualTo(0);
 
     }
 
