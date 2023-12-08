@@ -48,7 +48,7 @@ class CustomerControllerIT {
     }
 
     @Test
-    void testGetByIdNotFound() throws Exception {
+    void testGetByIdNotFound() {
 
         UUID randomUUID = UUID.randomUUID();
         log.debug("randomUUID = " + randomUUID);
