@@ -71,10 +71,4 @@ public class BeerController {
         return beerService.getBeerById(beerId).orElseThrow(NotFoundException::new);
     }
 
-
-
-
-
-
-
 }
