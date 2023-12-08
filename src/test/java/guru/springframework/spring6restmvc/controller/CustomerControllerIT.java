@@ -13,7 +13,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @Slf4j
-class CustomerControllerTestIT {
+class CustomerControllerIT {
 
     @Autowired
     CustomerController controller;

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 // the interaction of the controller with the underlying service layer
 @SpringBootTest
 @Slf4j
-class BeerControllerTestIT {
+class BeerControllerIT {
 
     // Components to perform integration testing with are autowired by Spring Boot
 
