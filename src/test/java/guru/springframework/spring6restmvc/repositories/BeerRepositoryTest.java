@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+// This is called a test splice - because we are only annotating by the component we want to test (the JPA repository)
+// rather than testing the whole spring context (@SpringBootTest)
 @DataJpaTest
 class BeerRepositoryTest {
 
