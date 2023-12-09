@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +41,46 @@ class BeerControllerIT {
     @Autowired
     BeerRepository beerRepository;
 
+    @Rollback
+    @Transactional
+    @Test
+    void saveNewBeerTest() {
+        BeerDTO beerDTO = BeerDTO.builder()
+                .beerName("New Beer")
+                .build();
+
+        ResponseEntity<BeerDTO> responseEntity = beerController.handlePost(beerDTO);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+
+        String[] locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/");
+        UUID savedUUID = UUID.fromString(locationUUID[4]);
+
+        // beerRepository.findById(xxx) returns an optional, so you got to call it with .get on the end
+        Beer savedBeer = beerRepository.findById(savedUUID).get();
+        assertThat(savedBeer).isNotNull();
+
+        log.debug("responseEntity.getStatusCode() = " + responseEntity.getStatusCode());
+        log.debug("responseEntity.getHeaders().getLocation() = " + responseEntity.getHeaders().getLocation());
+        log.debug("responseEntity.getHeaders().getLocation().getPath().split(\"/\")[4] = " + responseEntity.getHeaders().getLocation().getPath().split("/")[4]);
+        log.debug("savedBeer.getId() = " + savedBeer.getId());
+        log.debug("savedBeer.getBeerName() = " + savedBeer.getBeerName());
+    }
+
     @Test
     void testBeerIdNotFound() {
         assertThrows(NotFoundException.class, () -> {
             beerController.getBeerById(UUID.randomUUID());
         });
+
+        try {
+            log.debug("beerController.getBeerById(UUID.randomUUID()).getId().toString() = " + beerController.getBeerById(UUID.randomUUID()).getId().toString());
+        }
+        catch (NotFoundException notFoundException) {
+            log.debug("Since we are using a random UUID we throw the notFoundException");
+            log.debug("notFoundException.getMessage() = " + notFoundException.getMessage());
+        }
 
 //        // The below assert will fail
 //        Beer beer = beerRepository.findAll().get(0);

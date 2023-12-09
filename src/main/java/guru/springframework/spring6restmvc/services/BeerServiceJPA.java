@@ -26,8 +26,7 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public List<BeerDTO> listBeers() {
-        return beerRepository
-                .findAll()
+        return beerRepository.findAll()
                 .stream()
                 .map(beerMapper::beerToBeerDto)
                 .collect(Collectors.toList());
@@ -36,13 +35,20 @@ public class BeerServiceJPA implements BeerService {
     @Override
     public Optional<BeerDTO> getBeerById(UUID id) {
         return Optional.ofNullable(beerMapper.beerToBeerDto(beerRepository.findById(id)
-                        .orElse(null)
-        ));
+                        .orElse(null)));
     }
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
-        return null;
+
+//        // beerRepository.save(xxx) takes in an BeerEntity
+//        // So we first need to convert BeerDTO to Beer using the beerMapper
+//        Beer beerEntity = beerMapper.beerDtoToBeer(beer);
+//        Beer savedBeerEntity = beerRepository.save(beerEntity);
+//        // We need to return a BeerDTO, so we need to convert the Beer entity to a BeerDTO using the beerMapper
+//        return beerMapper.beerToBeerDto(savedBeerEntity);
+
+        return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beer)));
     }
 
     @Override
