@@ -4,9 +4,11 @@ import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 // Since we have multiple service implementations for the BeerService, we need to telL Spring which one to use
 @Primary
 @RequiredArgsConstructor
+@Slf4j
 public class BeerServiceJPA implements BeerService {
 
     private final BeerRepository beerRepository;
@@ -54,6 +57,18 @@ public class BeerServiceJPA implements BeerService {
     @Override
     public void updateBeerById(UUID beerId, BeerDTO beer) {
 
+        log.debug("beer.getBeerName() = " + beer.getBeerName());
+        beerRepository.findById(beerId).ifPresent(foundBeer -> {
+            // Set all values except id and version
+            foundBeer.setBeerName(beer.getBeerName());
+            foundBeer.setBeerStyle(beer.getBeerStyle());
+            foundBeer.setUpc(beer.getUpc());
+            foundBeer.setPrice(beer.getPrice());
+            foundBeer.setQuantityOnHand(beer.getQuantityOnHand());
+            foundBeer.setUpdateDate(LocalDateTime.now());
+            // save the updated the beer entity
+            beerRepository.save(foundBeer);
+        });
     }
 
     @Override

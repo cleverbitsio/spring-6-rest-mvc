@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import guru.springframework.spring6restmvc.entities.Beer;
+import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,43 @@ class BeerControllerIT {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Autowired
+    BeerMapper beerMapper;
+
+    @Transactional
+    @Rollback
+    @Test
+    void updateExistingBeer() {
+
+        // START: Mock data to emulate Put request data ---------
+        // Get a beer entity from the repository to update
+        Beer beer = beerRepository.findAll().get(0);
+
+        // Convert the entity to a dto before make changes to it
+        BeerDTO beerDTO = beerMapper.beerToBeerDto(beer);
+
+        // Change the returned dto as if it was being sent via a put endpoint
+        beerDTO.setId(null);
+        beerDTO.setVersion(null);
+        final String beerName = "UPDATED";
+        beerDTO.setBeerName(beerName);
+        log.debug("beerDTO.getBeerName() = " + beerDTO.getBeerName());
+        // END: Mock data to emulate Put request data ---------
+
+        // Now use the mocked data to emulate a PUT request
+        ResponseEntity responseEntity = beerController.updateById(beer.getId(), beerDTO);
+
+        // Assert that the status code returned is a 204
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+        log.debug("responseEntity.getStatusCode() = " + responseEntity.getStatusCode());
+
+        // Assert that the database has updated the entity by reading it back and comparing beerName
+        Beer updatedBeer = beerRepository.findById(beer.getId()).get();
+        log.debug("updatedBeer.getId() = " + updatedBeer.getId());
+        log.debug("updatedBeer.getBeerName() = " + updatedBeer.getBeerName());
+        assertThat(updatedBeer.getBeerName()).isEqualTo(beerName);
+    }
 
     @Rollback
     @Transactional
