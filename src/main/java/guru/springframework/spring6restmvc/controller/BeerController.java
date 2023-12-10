@@ -45,7 +45,13 @@ public class BeerController {
     public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer) {
         log.debug("in updateBeerById - in controller! Id: " + beerId);
         log.debug("in updateBeerById - in controller! beer.getBeerName(): " + beer.getBeerName());
-        beerService.updateBeerById(beerId, beer);
+
+        // We need to throw as exception if the returned object is empty
+        if (beerService.updateBeerById(beerId, beer).isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        // If exception not found we return the status code
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

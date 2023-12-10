@@ -105,6 +105,15 @@ class BeerControllerTest {
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
         beer.setBeerName("updated beer name");
 
+        // Mockito is provided an empty Optional of a BeerDTO which is its default
+        // which means this test causes the controller to throw a new NotFoundException
+        // and therefore returning a 404
+        // however in this test we should use a real Optional of BeerDTO object
+        // so lets setup Mockito to use our beer object using the given method
+        // here we are telling Mockito, when we call the beerService.updateBeerById, for any beerId and any BeerDTO
+        // we return an Optional of our BeerDTO objection called beer
+        given(beerService.updateBeerById(any(), any())).willReturn(Optional.of(beer));
+
         ResultActions resultActions =
                 mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
