@@ -129,9 +129,8 @@ class BeerControllerTest {
     @Test
     void testCreateNewBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
-        // reset the id and version so that we can re-use beer as a new beer object
-        beer.setId(null);
-        beer.setVersion(null);
+        // reset the id so that we can re-use beer as a new beer object
+        beer.setId(UUID.randomUUID());
 
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beer);
 

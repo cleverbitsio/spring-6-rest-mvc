@@ -119,7 +119,7 @@ class CustomerControllerTest {
     @Test
     void testCreateCustomer() throws Exception {
         CustomerDTO customer = customerServiceImpl.getAllCustomers().get(0);
-        customer.setId(null);
+        customer.setId(UUID.randomUUID());
         customer.setVersion(null);
         customer.setName("created by post");
 
