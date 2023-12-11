@@ -14,6 +14,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -45,6 +47,43 @@ class BeerControllerIT {
     @Autowired
     BeerMapper beerMapper;
 
+    @Rollback
+    @Transactional
+    @Test
+    void deleteByIdFound() {
+        Beer beer = beerRepository.findAll().get(0);
+
+        ResponseEntity responseEntity = beerController.deleteById(beer.getId());
+
+        // here I test that responseEntity returns the response code 204
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        // After deleting the entity, check if we throw the expected exceptions when trying to find the deleted beer:
+        // 1. Check foundBeer is null
+        // The getBeerById controller method calls the BeerService.getBeerById(xxx)
+        // The BeerServiceJPA in turn calls the beerRepositiory.findById(xxx).orElse(null)
+        // which handles the expected NoSuchElementException using orElse(null)
+        // I have used the same beerRepositiory.findById(xxx).orElse(null) method to handle the exception and instead
+        // return null
+        Beer foundBeer = beerRepository.findById(beer.getId()).orElse(null);
+        assertThat(foundBeer).isNull();
+
+        // 2. here I test that beerRepository.findById(beer.getId()) is empty - similar to 1. Check foundBeer is Null
+        assertThat(beerRepository.findById(beer.getId()).isEmpty());
+
+        // 3. Here I test beerRepository.findById(beer.getId()).get() w/o .orElse(null)
+        // I do this out of curiousity and check that the expected exception NoSuchElementException is thrown
+        assertThrows(NoSuchElementException.class, () -> {
+            beerRepository.findById(beer.getId()).get();
+        });
+
+        // 4. here I check the controller throws the expected custom higher level NotFoundException
+        // when trying to get the deleted item
+        assertThrows(NotFoundException.class, () -> {
+            beerController.getBeerById(beer.getId());
+        });
+    }
+
     @Test
     void testUpdateNotFound() {
         assertThrows(NotFoundException.class, () -> {
@@ -52,8 +91,8 @@ class BeerControllerIT {
         });
     }
 
-    @Transactional
     @Rollback
+    @Transactional
     @Test
     void updateExistingBeer() {
 
