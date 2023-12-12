@@ -47,6 +47,38 @@ class BeerControllerIT {
     @Autowired
     BeerMapper beerMapper;
 
+    @Rollback
+    @Transactional
+    @Test
+    void patchExistingBeer() {
+
+        // START: Mock data to emulate Patch request data ---------
+        // Get a beer entity from the repository to update
+        Beer beer = beerRepository.findAll().get(0);
+
+        // Convert the entity to a dto before make changes to it
+        BeerDTO beerDTO = beerMapper.beerToBeerDto(beer);
+
+        // Change the returned dto as if it was being sent via a patch endpoint
+        final String beerName = "UPDATED BY PATCH";
+        beerDTO.setBeerName(beerName);
+        log.debug("beerDTO.getBeerName() = " + beerDTO.getBeerName());
+        // END: Mock data to emulate Put request data ---------
+
+        // Now use the mocked data to emulate a PATCH request
+        ResponseEntity responseEntity = beerController.updateBeerPatchById(beer.getId(), beerDTO);
+
+        // Assert that the status code returned is a 204
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+        log.debug("responseEntity.getStatusCode() = " + responseEntity.getStatusCode());
+
+        // Assert that the database has updated the entity by reading it back and comparing beerName
+        Beer updatedBeer = beerRepository.findById(beer.getId()).get();
+        log.debug("updatedBeer.getId() = " + updatedBeer.getId());
+        log.debug("updatedBeer.getBeerName() = " + updatedBeer.getBeerName());
+        assertThat(updatedBeer.getBeerName()).isEqualTo(beerName);
+    }
+
     @Test
     void testDeleteByIDNotFound() {
         assertThrows(NotFoundException.class, () -> {
@@ -111,8 +143,6 @@ class BeerControllerIT {
         BeerDTO beerDTO = beerMapper.beerToBeerDto(beer);
 
         // Change the returned dto as if it was being sent via a put endpoint
-        beerDTO.setId(null);
-        beerDTO.setVersion(null);
         final String beerName = "UPDATED";
         beerDTO.setBeerName(beerName);
         log.debug("beerDTO.getBeerName() = " + beerDTO.getBeerName());
