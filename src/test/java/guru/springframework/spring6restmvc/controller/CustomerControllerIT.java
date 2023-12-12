@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,33 @@ class CustomerControllerIT {
 
     @Autowired
     CustomerController customerController;
+
+    @Rollback
+    @Transactional
+    @Test
+    void saveNewCustomerTest() {
+        final String name = "New Customer";
+        CustomerDTO customerDTO = CustomerDTO.builder()
+                    .name(name)
+                    .build();
+
+        ResponseEntity<CustomerDTO> responseEntity = customerController.handlePost(customerDTO);
+
+        // Response code should be 201 = Created success status response code
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(HttpStatus.CREATED.value()));
+
+        // The header should return the location of the new created object
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+        String[] locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/");
+        UUID savedUUID = UUID.fromString(locationUUID[4]);
+
+        // Test the newly created entity has been created in the repository
+        Customer savedCustomerEntity = customerRepository.findById(savedUUID).get();
+        assertThat(savedCustomerEntity).isNotNull();
+        assertThat(savedCustomerEntity.getId()).isEqualTo(savedUUID);
+        assertThat(savedCustomerEntity.getName()).isEqualTo(name);
+    }
 
     @Rollback
     @Transactional
