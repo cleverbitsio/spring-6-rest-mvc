@@ -29,7 +29,10 @@ public class BeerController {
     public ResponseEntity updateBeerPatchById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer) {
         log.debug("in updateBeerPatchById - in controller! Id: " + beerId);
 
-        beerService.patchBeerById(beerId, beer);
+        // We need to throw as exception if the returned object is empty
+        if (beerService.patchBeerById(beerId, beer).isEmpty()) {
+            throw new NotFoundException();
+        }
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

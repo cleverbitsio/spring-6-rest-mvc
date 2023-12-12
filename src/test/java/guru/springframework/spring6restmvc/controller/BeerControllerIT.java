@@ -47,6 +47,13 @@ class BeerControllerIT {
     @Autowired
     BeerMapper beerMapper;
 
+    @Test
+    void testPatchBeerByIDNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            beerController.updateBeerPatchById(UUID.randomUUID(), BeerDTO.builder().build());
+        });
+    }
+
     @Rollback
     @Transactional
     @Test

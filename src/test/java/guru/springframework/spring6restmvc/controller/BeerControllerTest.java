@@ -68,6 +68,16 @@ class BeerControllerTest {
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "New Name");
 
+        // Mockito is provided an empty Optional of a BeerDTO which is its default
+        // which means this test causes the controller to throw a new NotFoundException
+        // and therefore returning a 404, because NotFoundException has the
+        // @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Value Not Found") annotation
+        // however in this test we should use a real Optional of BeerDTO object
+        // so lets setup Mockito to use our beer object using the given method
+        // here we are telling Mockito, when we call the beerService.patchBeerById, for any beerId and any BeerDTO
+        // we return an Optional of our BeerDTO objection called beer
+        given(beerService.patchBeerById(any(), any())).willReturn(Optional.of(beer));
+
         ResultActions resultActions =
                 mockMvc.perform(patch(BeerController.BEER_PATH_ID, beer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -114,7 +124,8 @@ class BeerControllerTest {
 
         // Mockito is provided an empty Optional of a BeerDTO which is its default
         // which means this test causes the controller to throw a new NotFoundException
-        // and therefore returning a 404
+        // and therefore returning a 404, because NotFoundException has the
+        // @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Value Not Found") annotation
         // however in this test we should use a real Optional of BeerDTO object
         // so lets setup Mockito to use our beer object using the given method
         // here we are telling Mockito, when we call the beerService.updateBeerById, for any beerId and any BeerDTO
