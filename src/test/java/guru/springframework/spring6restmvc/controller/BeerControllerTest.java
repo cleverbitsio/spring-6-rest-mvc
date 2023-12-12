@@ -88,6 +88,13 @@ class BeerControllerTest {
     void testDeleteBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
+        // After updating deleteById to return a Boolean (true if the id exists in map) in BeerServiceImpl
+        // this test started to fail
+        // because Mockito by default was returning false or null
+        // however the expected return value should be true if we pass a valid beerId
+        // so lets use the given method to ensure we always return true
+        given(beerService.deleteById(any())).willReturn(true);
+
         ResultActions resultActions =
                 mockMvc.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
