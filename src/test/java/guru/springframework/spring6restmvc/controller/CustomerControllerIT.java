@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -36,6 +37,48 @@ class CustomerControllerIT {
 
     @Autowired
     CustomerMapper customerMapper;
+
+    @Test
+    void testPatchNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.patchCustomerById(UUID.randomUUID(), CustomerDTO.builder().build());
+        });
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchExistingCustomerById() {
+
+        // START: Generate Test Data
+        // To do any integration testing between the controller and service
+        // we need some data to test with
+
+        // the data needs to already exist - so we get a customer from the repository
+        Customer customerEntity = customerRepository.findAll().get(0);
+
+        // Controllers use dtos so lets convert the test data to a dto
+        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customerEntity);
+
+        // Next we prepare the test data to pass to customerController.updateCustomerByID(...);
+        UUID customerId = customerDTO.getId();
+        final String updatedCustomerName = "PATCHED";
+        customerDTO.setName(updatedCustomerName);
+        // END: Generate Test Data
+
+        // Now run the controller method with the test data
+        ResponseEntity responseEntity = customerController.patchCustomerById(customerId, customerDTO);
+
+        // Now we test if it worked with assertions
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+        assertThat(responseEntity.getStatusCode().toString()).isEqualTo(HttpStatus.NO_CONTENT.toString());
+        assertThat(customerController.getCustomerById(customerId).getName()).isEqualTo(updatedCustomerName);
+        assertThat(customerService.getCustomerById(customerId).get().getName()).isEqualTo(updatedCustomerName);
+        assertThat(customerMapper.customerToCustomerDto(customerRepository.findById(customerId).get()).getName()).isEqualTo(updatedCustomerName);
+        assertDoesNotThrow(() -> {
+            customerController.patchCustomerById(customerId, customerDTO);
+        });
+    }
 
     @Test
     void testUpdateNotFound() {
@@ -75,7 +118,9 @@ class CustomerControllerIT {
         assertThat(customerController.getCustomerById(customerId).getName()).isEqualTo(updatedCustomerName);
         assertThat(customerService.getCustomerById(customerId).get().getName()).isEqualTo(updatedCustomerName);
         assertThat(customerMapper.customerToCustomerDto(customerRepository.findById(customerId).get()).getName()).isEqualTo(updatedCustomerName);
-
+        assertDoesNotThrow(() -> {
+            customerController.updateCustomerByID(customerId, customerDTO);
+        });
     }
 
     @Test
