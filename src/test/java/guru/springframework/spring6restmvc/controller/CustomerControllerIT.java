@@ -37,10 +37,18 @@ class CustomerControllerIT {
     @Autowired
     CustomerMapper customerMapper;
 
+    @Test
+    void testUpdateNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.updateCustomerByID(UUID.randomUUID(),
+                    CustomerDTO.builder().build());
+        });
+    }
+
     @Rollback
     @Transactional
     @Test
-    void updateExistingCustomerById() {
+    void testUpdateExistingCustomerById() {
 
         // START: Generate Test Data
         // To do any integration testing between the controller and service

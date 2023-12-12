@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import guru.springframework.spring6restmvc.services.CustomerServiceImpl;
+import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -101,6 +102,8 @@ class CustomerControllerTest {
     void testUpdateCustomer() throws Exception {
         CustomerDTO customer = customerServiceImpl.getAllCustomers().get(0);
         customer.setName("updated via put");
+
+        given(customerService.updateCustomerById(any(), any())).willReturn(Optional.of(CustomerDTO.builder().build()));
 
         ResultActions resultActions =
                 mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId())

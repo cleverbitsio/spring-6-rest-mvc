@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -43,7 +44,10 @@ public class CustomerController {
     @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity updateCustomerByID(@PathVariable("customerId") UUID customerId,
                                              @RequestBody CustomerDTO customer) {
-        customerService.updateCustomerById(customerId, customer);
+        Optional<CustomerDTO> optionalCustomerDTO = customerService.updateCustomerById(customerId, customer);
+        if (optionalCustomerDTO.isEmpty()) {
+            throw new NotFoundException();
+        }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
