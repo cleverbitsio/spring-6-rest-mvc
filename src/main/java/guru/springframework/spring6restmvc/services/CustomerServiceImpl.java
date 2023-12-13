@@ -110,5 +110,4 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerDTO> getAllCustomers() {
         return new ArrayList<>(customerMap.values());
     }
-
 }

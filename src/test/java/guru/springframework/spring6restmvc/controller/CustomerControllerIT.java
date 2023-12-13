@@ -39,26 +39,19 @@ class CustomerControllerIT {
     @Autowired
     CustomerMapper customerMapper;
 
-    @Test
-    void testDeleteCustomerNotFoundById() {
-        assertThrows(NotFoundException.class, () -> {
-            customerController.deleteCustomerById(UUID.randomUUID());
-        });
-    }
-
     @Rollback
     @Transactional
     @Test
-    void testDeleteExistingCustomerById() {
+    void deleteByIdFound() {
         // START: Generate Test Data
         // To do any integration testing between the controller and service
         // we need some data to test with
 
         // the data needs to already exist - so we get a customer from the repository
-        Customer customerEntity = customerRepository.findAll().get(0);
+        Customer customer = customerRepository.findAll().get(0);
 
         // Controllers use dtos so lets convert the test data to a dto
-        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customerEntity);
+        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customer);
 
         // Next we prepare the test data to pass to customerController.updateCustomerByID(...);
         UUID customerId = customerDTO.getId();
@@ -68,12 +61,23 @@ class CustomerControllerIT {
         ResponseEntity responseEntity = customerController.deleteCustomerById(customerId);
 
         // Now we test if it worked with assertions
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+        assertThat(customerRepository.findById(customerId).isEmpty());
         assertThat(customerRepository.findById(customerDTO.getId()).isEmpty());
+        assertThat(customerRepository.findById(customer.getId()).isEmpty());
         assertThrows(NoSuchElementException.class, () -> {
             customerRepository.findById(customerDTO.getId()).get();
         });
         assertThrows(NotFoundException.class, () -> {
             customerController.getCustomerById(customerDTO.getId());
+        });
+
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.deleteCustomerById(UUID.randomUUID());
         });
     }
 
@@ -94,10 +98,10 @@ class CustomerControllerIT {
         // we need some data to test with
 
         // the data needs to already exist - so we get a customer from the repository
-        Customer customerEntity = customerRepository.findAll().get(0);
+        Customer customer = customerRepository.findAll().get(0);
 
         // Controllers use dtos so lets convert the test data to a dto
-        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customerEntity);
+        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customer);
 
         // Next we prepare the test data to pass to customerController.updateCustomerByID(...);
         UUID customerId = customerDTO.getId();
@@ -122,8 +126,7 @@ class CustomerControllerIT {
     @Test
     void testUpdateNotFound() {
         assertThrows(NotFoundException.class, () -> {
-            customerController.updateCustomerByID(UUID.randomUUID(),
-                    CustomerDTO.builder().build());
+            customerController.updateCustomerByID(UUID.randomUUID(), CustomerDTO.builder().build());
         });
     }
 
@@ -137,15 +140,15 @@ class CustomerControllerIT {
         // we need some data to test with
 
         // the data needs to already exist - so we get a customer from the repository
-        Customer customerEntity = customerRepository.findAll().get(0);
+        Customer customer = customerRepository.findAll().get(0);
 
         // Controllers use dtos so lets convert the test data to a dto
-        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customerEntity);
+        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customer);
 
         // Next we prepare the test data to pass to customerController.updateCustomerByID(...);
         UUID customerId = customerDTO.getId();
-        final String updatedCustomerName = "UPDATED";
-        customerDTO.setName(updatedCustomerName);
+        final String customerName = "UPDATED";
+        customerDTO.setName(customerName);
         // END: Generate Test Data
 
         // Now run the controller method with the test data
@@ -154,12 +157,15 @@ class CustomerControllerIT {
         // Now we test if it worked with assertions
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
         assertThat(responseEntity.getStatusCode().toString()).isEqualTo(HttpStatus.NO_CONTENT.toString());
-        assertThat(customerController.getCustomerById(customerId).getName()).isEqualTo(updatedCustomerName);
-        assertThat(customerService.getCustomerById(customerId).get().getName()).isEqualTo(updatedCustomerName);
-        assertThat(customerMapper.customerToCustomerDto(customerRepository.findById(customerId).get()).getName()).isEqualTo(updatedCustomerName);
+        assertThat(customerController.getCustomerById(customerId).getName()).isEqualTo(customerName);
+        assertThat(customerService.getCustomerById(customerId).get().getName()).isEqualTo(customerName);
+        Customer updatedCustomer = customerRepository.findById(customer.getId()).get();
+        assertThat(updatedCustomer.getName()).isEqualTo(customerName);
+        assertThat(customerMapper.customerToCustomerDto(customerRepository.findById(customerId).get()).getName()).isEqualTo(customerName);
         assertDoesNotThrow(() -> {
             customerController.updateCustomerByID(customerId, customerDTO);
         });
+
     }
 
     @Test
@@ -198,10 +204,10 @@ class CustomerControllerIT {
         UUID savedUUID = UUID.fromString(locationUUID[4]);
 
         // Test the newly created entity has been created in the repository
-        Customer savedCustomerEntity = customerRepository.findById(savedUUID).get();
-        assertThat(savedCustomerEntity).isNotNull();
-        assertThat(savedCustomerEntity.getId()).isEqualTo(savedUUID);
-        assertThat(savedCustomerEntity.getName()).isEqualTo(name);
+        Customer customer = customerRepository.findById(savedUUID).get();
+        assertThat(customer).isNotNull();
+        assertThat(customer.getId()).isEqualTo(savedUUID);
+        assertThat(customer.getName()).isEqualTo(name);
     }
 
     @Rollback

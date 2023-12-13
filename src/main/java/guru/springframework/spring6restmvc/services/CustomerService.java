@@ -10,7 +10,7 @@ import java.util.UUID;
  * Created by jt, Spring Framework Guru.
  */
 public interface CustomerService {
-    Optional<CustomerDTO> getCustomerById(UUID id);
+    Optional<CustomerDTO> getCustomerById(UUID uuid);
 
     List<CustomerDTO> getAllCustomers();
 
