@@ -16,6 +16,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -37,6 +38,44 @@ class CustomerControllerIT {
 
     @Autowired
     CustomerMapper customerMapper;
+
+    @Test
+    void testDeleteCustomerNotFoundById() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.deleteCustomerById(UUID.randomUUID());
+        });
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testDeleteExistingCustomerById() {
+        // START: Generate Test Data
+        // To do any integration testing between the controller and service
+        // we need some data to test with
+
+        // the data needs to already exist - so we get a customer from the repository
+        Customer customerEntity = customerRepository.findAll().get(0);
+
+        // Controllers use dtos so lets convert the test data to a dto
+        CustomerDTO customerDTO = customerMapper.customerToCustomerDto(customerEntity);
+
+        // Next we prepare the test data to pass to customerController.updateCustomerByID(...);
+        UUID customerId = customerDTO.getId();
+        // END: Generate Test Data
+
+        // Now run the controller method with the test data
+        ResponseEntity responseEntity = customerController.deleteCustomerById(customerId);
+
+        // Now we test if it worked with assertions
+        assertThat(customerRepository.findById(customerDTO.getId()).isEmpty());
+        assertThrows(NoSuchElementException.class, () -> {
+            customerRepository.findById(customerDTO.getId()).get();
+        });
+        assertThrows(NotFoundException.class, () -> {
+            customerController.getCustomerById(customerDTO.getId());
+        });
+    }
 
     @Test
     void testPatchNotFound() {
