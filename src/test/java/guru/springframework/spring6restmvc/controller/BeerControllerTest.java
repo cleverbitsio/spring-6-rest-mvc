@@ -145,20 +145,21 @@ class BeerControllerTest {
     }
 
     @Test
-    void testCreateNewBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers().get(0);
-        // reset the id so that we can re-use beer as a new beer object
-        beer.setId(UUID.randomUUID());
+    void testCreateBeerNullBeerName() throws Exception {
 
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beer);
+        //Create an empty beerDTO object
+        BeerDTO beerDTO = BeerDTO.builder().build();
 
+        // the assumption when saving any BeerDTO object, we return a valid BeerDTO object
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(0));
+
+        // we expect a bad data request because we have not set the beer name
         ResultActions resultActions =
                 mockMvc.perform(post(BeerController.BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
                          .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(beer)))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("Location"));
+                        .content(objectMapper.writeValueAsString(beerDTO)))
+                .andExpect(status().isBadRequest());
 
         printResultActions(resultActions);
 
