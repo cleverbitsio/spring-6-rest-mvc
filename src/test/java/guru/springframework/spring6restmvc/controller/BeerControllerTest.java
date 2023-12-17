@@ -153,7 +153,9 @@ class BeerControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                          .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                // we expect 2 validation errors ([{"beerName":"must not be null"},{"beerName":"must not be blank"}])
+                .andExpect(jsonPath("$.length()", is(2)));
 
         MockMvCHelper.printResultActions(resultActions);
 
