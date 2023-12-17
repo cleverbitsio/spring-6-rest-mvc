@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import guru.springframework.spring6restmvc.services.CustomerServiceImpl;
-import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -81,7 +78,7 @@ class CustomerControllerTest {
         assertThat(customerArgumentCaptor.getValue().getName())
                 .isEqualTo(customerMap.get("name"));
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
 
     @Test
@@ -98,7 +95,7 @@ class CustomerControllerTest {
         verify(customerService).deleteCustomerById(uuidArgumentCaptor.capture());
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
 
     @Test
@@ -119,7 +116,7 @@ class CustomerControllerTest {
 
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
 
     }
     @Test
@@ -140,7 +137,7 @@ class CustomerControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
 
     }
 
@@ -156,7 +153,7 @@ class CustomerControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()" , is(customerService.getAllCustomers().size())));
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
 
     @Test
@@ -167,7 +164,7 @@ class CustomerControllerTest {
         ResultActions resultActions =
                 mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID, UUID.randomUUID()))
                 .andExpect(status().isNotFound());
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
 
     @Test
@@ -184,12 +181,8 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.id", is(customer.getId().toString())))
                 .andExpect(jsonPath("$.name" , is(customer.getName())));
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
 
     }
 
-    private static void printResultActions(ResultActions resultActions) throws UnsupportedEncodingException {
-        System.out.println("Response Content: " + resultActions.andReturn().getResponse().getContentAsString());
-        System.out.println("Status Code: " + resultActions.andReturn().getResponse().getStatus());
-    }
 }

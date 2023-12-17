@@ -15,11 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -28,8 +24,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.io.UnsupportedEncodingException;
 
 
 @WebMvcTest(BeerController.class)
@@ -90,7 +84,7 @@ class BeerControllerTest {
         assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
         assertThat(beerMap.get("beerName")).isEqualTo(beerArgumentCaptor.getValue().getBeerName());
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
 
     }
 
@@ -114,7 +108,7 @@ class BeerControllerTest {
 
         assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
 
     @Test
@@ -141,7 +135,7 @@ class BeerControllerTest {
 
         verify(beerService).updateBeerById(beer.getId(), beer);
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
 
     @Test
@@ -161,7 +155,7 @@ class BeerControllerTest {
                         .content(objectMapper.writeValueAsString(beerDTO)))
                 .andExpect(status().isBadRequest());
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
 
     }
 
@@ -183,7 +177,7 @@ class BeerControllerTest {
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$.length()", is(testBeers.size())));
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
 
     @Test
@@ -219,12 +213,6 @@ class BeerControllerTest {
                 .andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
                 .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
 
-        printResultActions(resultActions);
+        MockMvCHelper.printResultActions(resultActions);
     }
-
-    private static void printResultActions(ResultActions resultActions) throws UnsupportedEncodingException {
-        System.out.println("Response Content: " + resultActions.andReturn().getResponse().getContentAsString());
-        System.out.println("Status Code: " + resultActions.andReturn().getResponse().getStatus());
-    }
-
 }
