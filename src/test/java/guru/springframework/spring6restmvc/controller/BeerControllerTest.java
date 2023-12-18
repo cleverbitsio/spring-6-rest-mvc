@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.*;
@@ -139,25 +140,46 @@ class BeerControllerTest {
     }
 
     @Test
+    void testCreateNewBeer() throws Exception {
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
+        beer.setVersion(null);
+        beer.setId(null);
+
+        // Assume that when we call the saveNewBeer method for the BeeService, it will return a valid BeerDTO
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
+
+        ResultActions resultActions =
+        mockMvc.perform(post(BeerController.BEER_PATH)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
+        MockMvCHelper.printResultActions(resultActions);
+    }
+
+    @Test
     void testCreateBeerNullBeerName() throws Exception {
 
         //Create an empty beerDTO object
         BeerDTO beerDTO = BeerDTO.builder().build();
 
         // the assumption when saving any BeerDTO object, we return a valid BeerDTO object
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(0));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         // we expect a bad data request because we have not set the beer name
-        ResultActions resultActions =
-                mockMvc.perform(post(BeerController.BEER_PATH)
+        MvcResult mvcResult = mockMvc.perform(post(BeerController.BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
                          .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
                 .andExpect(status().isBadRequest())
                 // we expect 2 validation errors ([{"beerName":"must not be null"},{"beerName":"must not be blank"}])
-                .andExpect(jsonPath("$.length()", is(2)));
+                .andExpect(jsonPath("$.length()", is(2)))
+                .andReturn();
 
-        MockMvCHelper.printResultActions(resultActions);
+        System.out.println(mvcResult.getResponse().getContentAsString());
+        MockMvCHelper.printMvcResult(mvcResult);
 
     }
 
@@ -168,9 +190,12 @@ class BeerControllerTest {
         List<BeerDTO> testBeers = beerServiceImpl.listBeers();
 
         // previously Mockito was returning a null body and null content type
-        // here we tell Mockito to return testBeers when we call the BeerService listBeers method
+        // here we tell Mockito to return a list of BeerDTOs when we call the
+        // BeerService listBeers method
         // given the beerService listBeers method, we will return our testBeers object
         given(beerService.listBeers()).willReturn(testBeers);
+        // added this additional given to match tutor code - so diff is easier to see
+        given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
 
         ResultActions resultActions =
                 mockMvc.perform(get(BeerController.BEER_PATH)

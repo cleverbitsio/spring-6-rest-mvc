@@ -11,4 +11,9 @@ public class MockMvCHelper {
         System.out.println("mvcResult Response Content: \n" + mvcResult.getResponse().getContentAsString());
         System.out.println("mvcResult Status Code: \n" + mvcResult.getResponse().getStatus());
     }
+
+    static void printMvcResult(MvcResult mvcResult) throws UnsupportedEncodingException {
+        System.out.println("mvcResult Response Content: \n" + mvcResult.getResponse().getContentAsString());
+        System.out.println("mvcResult Status Code: \n" + mvcResult.getResponse().getStatus());
+    }
 }

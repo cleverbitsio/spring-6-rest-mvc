@@ -103,7 +103,8 @@ class CustomerControllerTest {
         CustomerDTO customer = customerServiceImpl.getAllCustomers().get(0);
         customer.setName("updated via put");
 
-        given(customerService.updateCustomerById(any(), any())).willReturn(Optional.of(CustomerDTO.builder().build()));
+        given(customerService.updateCustomerById(any(), any())).willReturn(Optional.of(CustomerDTO.builder()
+                .build()));
 
         ResultActions resultActions =
                 mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId())
@@ -127,12 +128,11 @@ class CustomerControllerTest {
         customer.setName("created by post");
 
         given(customerService.saveNewCustomer(any(CustomerDTO.class)))
-                .willReturn(customer);
+                .willReturn(customerServiceImpl.getAllCustomers().get(1));
 
         ResultActions resultActions =
-                mockMvc.perform(post(CustomerController.CUSTOMER_PATH)
+                mockMvc.perform(post(CustomerController.CUSTOMER_PATH).contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customer)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
@@ -151,7 +151,7 @@ class CustomerControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()" , is(customerService.getAllCustomers().size())));
+                .andExpect(jsonPath("$.length()" , is(3)));
 
         MockMvCHelper.printResultActions(resultActions);
     }

@@ -149,7 +149,8 @@ class BeerControllerIT {
 
         // Convert the entity to a dto before make changes to it
         BeerDTO beerDTO = beerMapper.beerToBeerDto(beer);
-
+        beerDTO.setId(null);
+        beerDTO.setVersion(null);
         // Change the returned dto as if it was being sent via a put endpoint
         final String beerName = "UPDATED";
         beerDTO.setBeerName(beerName);
@@ -178,7 +179,7 @@ class BeerControllerIT {
                 .beerName("New Beer")
                 .build();
 
-        ResponseEntity<BeerDTO> responseEntity = beerController.handlePost(beerDTO);
+        ResponseEntity responseEntity = beerController.handlePost(beerDTO);
 
         // Response code should be 201 = Created success status response code
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
