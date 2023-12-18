@@ -34,8 +34,8 @@ public class Beer {
 
     @NotNull
     @NotBlank
-    @Size(max = 20)
-    @Column(length = 20)
+    @Size(max = 30)
+    @Column(length = 30)
     private String beerName;
 
     @NotNull

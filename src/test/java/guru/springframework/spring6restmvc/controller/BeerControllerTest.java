@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +63,10 @@ class BeerControllerTest {
         // this needs to be used with jackson to convert it to json
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "New Name");
+        beerMap.put("price", "1.99");
+        beerMap.put("upc", "123");
+        beerMap.put("beerStyle", BeerStyle.PALE_ALE);
+
 
         // Mockito is provided an empty Optional of a BeerDTO which is its default
         // which means this test causes the controller to throw a new NotFoundException
