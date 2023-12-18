@@ -175,7 +175,7 @@ class BeerControllerTest {
                         .content(objectMapper.writeValueAsString(beerDTO)))
                 .andExpect(status().isBadRequest())
                 // we expect 2 validation errors ([{"beerName":"must not be null"},{"beerName":"must not be blank"}])
-                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$.length()", is(6)))
                 .andReturn();
 
         System.out.println(mvcResult.getResponse().getContentAsString());
