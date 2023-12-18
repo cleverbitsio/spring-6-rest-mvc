@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.repositories;
 
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 // This is called a test splice - because we are only annotating by the component we want to test (the JPA repository)
 // rather than testing the whole spring context (@SpringBootTest)
@@ -17,6 +19,20 @@ class BeerRepositoryTest {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Test
+    void testSaveBeerNameTooLong() {
+        assertThrows(ConstraintViolationException.class, () -> {
+            beerRepository.save(Beer.builder()
+                    .beerName("My BeerMy BeerMy BeerMy BeerMy BeerMy BeerMy BeerMy BeerMy BeerMy BeerMy Beer")
+                    .beerStyle(BeerStyle.PALE_ALE)
+                    .upc("12345")
+                    .price(new BigDecimal("11.99"))
+                    .build());
+            beerRepository.flush();
+        });
+
+    }
 
     @Test
     void testSaveBeer() {
