@@ -74,6 +74,10 @@ class BeerControllerIT {
 
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "New NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew Name");
+        beerMap.put("price", "0.99");
+        beerMap.put("upc", "0.99");
+        beerMap.put("price", "0.99");
+        beerMap.put("beerStyle", "PALE_ALE");
 
         ResultActions resultActions =
                 mockMvc.perform(patch(BeerController.BEER_PATH_ID, beer.getId())
