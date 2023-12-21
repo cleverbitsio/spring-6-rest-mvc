@@ -21,7 +21,12 @@ public class BeerDTO {
 
     @NotBlank
     @NotNull
-    @Size(max = 30)
+    // this prevents exceptions hitting the JPA layer, if the beerName is too long
+    // I am commenting this out to demonstrate exception handling in jpa layer using custom JPA validation Error Handling
+    //But moving forward, i will include @Size(max = 30) as a validation on the dto
+    // so that validation fails before the JPA layer - which gives us free and contextual error handling/messaging
+    // i.e [{"beerName":"size must be between 0 and 30"}]
+//    @Size(max = 30)
     private String beerName;
 
     @NotNull
