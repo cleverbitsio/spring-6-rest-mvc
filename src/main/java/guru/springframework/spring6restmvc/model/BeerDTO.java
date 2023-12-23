@@ -26,7 +26,7 @@ public class BeerDTO {
     //But moving forward, i will include @Size(max = 30) as a validation on the dto
     // so that validation fails before the JPA layer - which gives us free and contextual error handling/messaging
     // i.e [{"beerName":"size must be between 0 and 30"}]
-//    @Size(max = 30)
+    @Size(max = 30)
     private String beerName;
 
     @NotNull
