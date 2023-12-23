@@ -25,8 +25,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -84,7 +86,8 @@ class BeerControllerIT {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(beerMap)))
-                        .andExpect(status().isBadRequest());
+                        .andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.length()", is(1)));
 
         Assertions.assertThat(resultActions.andReturn().getResponse().getStatus()).isEqualTo(400);
 
