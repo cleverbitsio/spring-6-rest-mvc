@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.bootstrap;
 
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import guru.springframework.spring6restmvc.repositories.CustomerRepository;
+import guru.springframework.spring6restmvc.services.BeerCsvService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +19,22 @@ class BootstrapDataTest {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    BeerCsvService csvService;
+
     BootstrapData bootstrapData;
 
     @BeforeEach
     void setUp() {
-        bootstrapData = new BootstrapData(beerRepository, customerRepository);
+        bootstrapData = new BootstrapData(beerRepository, customerRepository, csvService);
     }
 
     @Test
     void Testrun() throws Exception {
         bootstrapData.run(null);
 
-        assertThat(beerRepository.count()).isEqualTo(bootstrapData.getBeerRepository().count());
-        assertThat(customerRepository.count()).isEqualTo(bootstrapData.getCustomerRepository().count());
+        assertThat(beerRepository.count()).isEqualTo(3);
+        assertThat(customerRepository.count()).isEqualTo(3);
     }
 }
 
