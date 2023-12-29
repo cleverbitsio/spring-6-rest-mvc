@@ -289,7 +289,7 @@ class BeerControllerIT {
 
     @Test
     void testListBeers() {
-        List<BeerDTO> dtos = beerController.listBeers();
+        List<BeerDTO> dtos = beerController.listBeers(null);
 
         log.debug("dtos.size() = " + dtos.size());
         log.debug("beerRepository.count() = " + beerRepository.count());
@@ -311,7 +311,7 @@ class BeerControllerIT {
 
         beerRepository.deleteAll();
 
-        List<BeerDTO> dtos = beerController.listBeers();
+        List<BeerDTO> dtos = beerController.listBeers(null);
 
         log.debug("dtos.size() = " + dtos.size());
         log.debug("beerRepository.count() = " + beerRepository.count());
