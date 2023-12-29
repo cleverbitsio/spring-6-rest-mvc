@@ -1,13 +1,17 @@
 package guru.springframework.spring6restmvc.repositories;
 
+import guru.springframework.spring6restmvc.bootstrap.BootstrapData;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
+import guru.springframework.spring6restmvc.services.BeerCsvServiceImpl;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,10 +19,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 // This is called a test splice - because we are only annotating by the component we want to test (the JPA repository)
 // rather than testing the whole spring context (@SpringBootTest)
 @DataJpaTest
+// again since this is a test splice - we don't load the full spring context - so some tests will fail because of that
+// use @Import include any classes required for testing
+@Import({BootstrapData.class, BeerCsvServiceImpl.class})
 class BeerRepositoryTest {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Test
+    void testGetBeerListByName() {
+        // Return any beer that contains the string ipa in its name
+        List<Beer> list =  beerRepository.findAllByBeerNameIsLikeIgnoreCase("%IPA%");
+
+        assertThat(list.size()).isEqualTo(336);
+    }
 
     @Test
     void testSaveBeerNameTooLong() {
