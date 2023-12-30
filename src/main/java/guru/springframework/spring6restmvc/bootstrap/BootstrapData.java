@@ -7,9 +7,7 @@ import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import guru.springframework.spring6restmvc.repositories.CustomerRepository;
 import guru.springframework.spring6restmvc.services.BeerCsvService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -30,12 +28,9 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class BootstrapData implements CommandLineRunner {
-
     private final BeerRepository beerRepository;
     private final CustomerRepository customerRepository;
-
     private final BeerCsvService beerCsvService;
-
 
     @Transactional
     @Override
@@ -75,6 +70,7 @@ public class BootstrapData implements CommandLineRunner {
             });
         }
     }
+
     private void loadBeerData() {
         if (beerRepository.count() == 0){
             Beer beer1 = Beer.builder()
