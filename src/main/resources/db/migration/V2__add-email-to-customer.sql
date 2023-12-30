@@ -1,2 +1,2 @@
-ALTER TABLE customer
-ADD COLUMN email VARCHAR(255);
+alter table customer
+add column email varchar(255);

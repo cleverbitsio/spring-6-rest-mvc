@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @Primary
 @RequiredArgsConstructor
 public class CustomerServiceJPA implements CustomerService {
-
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
@@ -47,7 +46,6 @@ public class CustomerServiceJPA implements CustomerService {
 
     @Override
     public Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customer) {
-
         AtomicReference<Optional<CustomerDTO>> atomicReference = new AtomicReference<>();
         customerRepository.findById(customerId).ifPresentOrElse(foundCustomer -> {
                     foundCustomer.setName(customer.getName());
@@ -57,6 +55,7 @@ public class CustomerServiceJPA implements CustomerService {
                 }, () -> {
                     atomicReference.set(Optional.empty());
                 });
+
         return atomicReference.get();
     }
 
@@ -72,6 +71,7 @@ public class CustomerServiceJPA implements CustomerService {
     @Override
     public Optional<CustomerDTO> patchCustomerById(UUID customerId, CustomerDTO customer) {
         AtomicReference<Optional<CustomerDTO>> atomicReference = new AtomicReference<>();
+
         customerRepository.findById(customerId).ifPresentOrElse(foundCustomer -> {
             if (StringUtils.hasText(customer.getName())) {
                 foundCustomer.setName(customer.getName());
@@ -82,6 +82,7 @@ public class CustomerServiceJPA implements CustomerService {
         }, () -> {
             atomicReference.set(Optional.empty());
         });
+
         return atomicReference.get();
     }
 }
