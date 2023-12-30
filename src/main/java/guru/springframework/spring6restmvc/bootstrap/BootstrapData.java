@@ -29,12 +29,9 @@ import java.util.UUID;
  */
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class BootstrapData implements CommandLineRunner {
 
-    @Getter
     private final BeerRepository beerRepository;
-    @Getter
     private final CustomerRepository customerRepository;
 
     private final BeerCsvService beerCsvService;
@@ -43,7 +40,6 @@ public class BootstrapData implements CommandLineRunner {
     @Transactional
     @Override
     public void run(String... args) throws Exception {
-        log.debug("---------- in BootstrapData run method");
         loadBeerData();
         loadCsvData();
         loadCustomerData();
@@ -82,7 +78,7 @@ public class BootstrapData implements CommandLineRunner {
     private void loadBeerData() {
         if (beerRepository.count() == 0){
             Beer beer1 = Beer.builder()
-                    .beerName("Galaxy Cat from JPA")
+                    .beerName("Galaxy Cat")
                     .beerStyle(BeerStyle.PALE_ALE)
                     .upc("12356")
                     .price(new BigDecimal("12.99"))
@@ -92,7 +88,7 @@ public class BootstrapData implements CommandLineRunner {
                     .build();
 
             Beer beer2 = Beer.builder()
-                    .beerName("Crank from JPA")
+                    .beerName("Crank")
                     .beerStyle(BeerStyle.PALE_ALE)
                     .upc("12356222")
                     .price(new BigDecimal("11.99"))
@@ -102,7 +98,7 @@ public class BootstrapData implements CommandLineRunner {
                     .build();
 
             Beer beer3 = Beer.builder()
-                    .beerName("Sunshine City from JPA")
+                    .beerName("Sunshine City")
                     .beerStyle(BeerStyle.IPA)
                     .upc("12356")
                     .price(new BigDecimal("13.99"))
@@ -123,7 +119,7 @@ public class BootstrapData implements CommandLineRunner {
         if (customerRepository.count() == 0) {
             Customer customer1 = Customer.builder()
                     .id(UUID.randomUUID())
-                    .name("Customer 1 from JPA")
+                    .name("Customer 1")
                     .version(1)
                     .createdDate(LocalDateTime.now())
                     .updateDate(LocalDateTime.now())
@@ -131,7 +127,7 @@ public class BootstrapData implements CommandLineRunner {
 
             Customer customer2 = Customer.builder()
                     .id(UUID.randomUUID())
-                    .name("Customer 2 from JPA")
+                    .name("Customer 2")
                     .version(1)
                     .createdDate(LocalDateTime.now())
                     .updateDate(LocalDateTime.now())
@@ -139,7 +135,7 @@ public class BootstrapData implements CommandLineRunner {
 
             Customer customer3 = Customer.builder()
                     .id(UUID.randomUUID())
-                    .name("Customer 3 from JPA")
+                    .name("Customer 3")
                     .version(1)
                     .createdDate(LocalDateTime.now())
                     .updateDate(LocalDateTime.now())
