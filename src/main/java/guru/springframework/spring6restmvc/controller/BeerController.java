@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.services.BeerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,7 @@ public class BeerController {
         if(! beerService.deleteById(beerId)) {
             throw new NotFoundException();
         }
+
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -65,15 +67,19 @@ public class BeerController {
     public ResponseEntity handlePost(@Validated @RequestBody BeerDTO beer){
         log.debug("in saveNewBeer - in controller!");
         BeerDTO savedBeer = beerService.saveNewBeer(beer);
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location",  BEER_PATH + "/" + savedBeer.getId().toString());
+
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     @GetMapping(value = BEER_PATH)
-    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName) {
+    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName,
+                                   @RequestParam(required = false) BeerStyle beerStyle,
+                                   @RequestParam(required = false) Boolean showInventory) {
         log.debug("in listBeers - in controller!");
-        return beerService.listBeers(beerName);
+        return beerService.listBeers(beerName, beerStyle, showInventory);
     }
 
     @GetMapping(value = BEER_PATH_ID)

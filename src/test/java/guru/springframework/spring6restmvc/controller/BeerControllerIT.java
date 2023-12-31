@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repositories.BeerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,14 +68,52 @@ class BeerControllerIT {
 
     MockMvc mockMvc;
 
-
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
     @Test
-    void tesListBeersByName() throws Exception {
+    void testListBeersByStyleAndNameShowInventoryTrue() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerName", "IPA")
+                        .queryParam("beerStyle", BeerStyle.IPA.name())
+                        .queryParam("showInventory", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(310)))
+                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()));
+    }
+
+    @Test
+    void testListBeersByStyleAndNameShowInventoryFalse() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerName", "IPA")
+                        .queryParam("beerStyle", BeerStyle.IPA.name())
+                        .queryParam("showInventory", "false"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(310)))
+                .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.nullValue()));
+    }
+
+    @Test
+    void testListBeersByStyleAndName() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerName", "IPA")
+                        .queryParam("beerStyle", BeerStyle.IPA.name()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(310)));
+    }
+
+    @Test
+    void testListBeersByStyle() throws Exception {
+        mockMvc.perform(get(BeerController.BEER_PATH)
+                        .queryParam("beerStyle",BeerStyle.IPA.name()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(548)));
+    }
+
+    @Test
+    void testListBeersByName() throws Exception {
         mockMvc.perform(get(BeerController.BEER_PATH)
                 .queryParam("beerName", "IPA"))
                 .andExpect(status().isOk())
@@ -88,7 +128,6 @@ class BeerControllerIT {
         beerMap.put("beerName", "New NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew NameNew Name");
         beerMap.put("price", "0.99");
         beerMap.put("upc", "0.99");
-        beerMap.put("price", "0.99");
         beerMap.put("beerStyle", "PALE_ALE");
 
         ResultActions resultActions =
@@ -281,6 +320,7 @@ class BeerControllerIT {
     @Test
     void testGetById() {
         Beer beer = beerRepository.findAll().get(0);
+
         BeerDTO dto = beerController.getBeerById(beer.getId());
 
         assertThat(dto).isNotNull();
@@ -288,7 +328,7 @@ class BeerControllerIT {
 
     @Test
     void testListBeers() {
-        List<BeerDTO> dtos = beerController.listBeers(null);
+        List<BeerDTO> dtos = beerController.listBeers(null, null, false);
 
         log.debug("dtos.size() = " + dtos.size());
         log.debug("beerRepository.count() = " + beerRepository.count());
@@ -309,8 +349,7 @@ class BeerControllerIT {
     void testEmptyListBeers() {
 
         beerRepository.deleteAll();
-
-        List<BeerDTO> dtos = beerController.listBeers(null);
+        List<BeerDTO> dtos = beerController.listBeers(null, null, false);
 
         log.debug("dtos.size() = " + dtos.size());
         log.debug("beerRepository.count() = " + beerRepository.count());
