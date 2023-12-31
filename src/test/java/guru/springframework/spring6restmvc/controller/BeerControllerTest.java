@@ -56,7 +56,7 @@ class BeerControllerTest {
 
     @Test
     void testPatchBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers(null, null, false).get(0);
+        BeerDTO beer = beerServiceImpl.listBeers(null, null, false, 1, 25).get(0);
 
         // Use a map object to create some json to patch with
         // this needs to be used with jackson to convert it to json
@@ -95,7 +95,7 @@ class BeerControllerTest {
 
     @Test
     void testDeleteBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers(null, null, false).get(0);
+        BeerDTO beer = beerServiceImpl.listBeers(null, null, false, 1, 25).get(0);
 
         // After updating deleteById to return a Boolean (true if the id exists in map) in BeerServiceImpl
         // this test started to fail
@@ -118,7 +118,7 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers(null, null, false).get(0);
+        BeerDTO beer = beerServiceImpl.listBeers(null, null, false, 1, 25).get(0);
         beer.setBeerName("updated beer name");
 
         // Mockito is provided an empty Optional of a BeerDTO which is its default
@@ -145,7 +145,7 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeerBlankName() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers(null, null, false).get(0);
+        BeerDTO beer = beerServiceImpl.listBeers(null, null, false, 1, 25).get(0);
         beer.setBeerName("");
         given(beerService.updateBeerById(any(), any())).willReturn(Optional.of(beer));
 
@@ -163,12 +163,12 @@ class BeerControllerTest {
 
     @Test
     void testCreateNewBeer() throws Exception {
-        BeerDTO beer = beerServiceImpl.listBeers(null, null, false).get(0);
+        BeerDTO beer = beerServiceImpl.listBeers(null, null, false, 1, 25).get(0);
         beer.setVersion(null);
         beer.setId(null);
 
         // Assume that when we call the saveNewBeer method for the BeeService, it will return a valid BeerDTO
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false).get(1));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).get(1));
 
         ResultActions resultActions =
         mockMvc.perform(post(BeerController.BEER_PATH)
@@ -188,7 +188,7 @@ class BeerControllerTest {
         BeerDTO beerDTO = BeerDTO.builder().build();
 
         // the assumption when saving any BeerDTO object, we return a valid BeerDTO object
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false).get(1));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).get(1));
 
         // we expect a bad data request because we have not set the beer name
         MvcResult mvcResult = mockMvc.perform(post(BeerController.BEER_PATH)
@@ -208,23 +208,20 @@ class BeerControllerTest {
     @Test
     void testListBeers() throws Exception {
 
-        // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
-        List<BeerDTO> testBeers = beerService.listBeers(null, null, false);
+        // here we are moving the service return value
+        given(beerService.listBeers(any(), any(), any(), any(), any()))
+                        .willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25));
 
-        // previously Mockito was returning a null body and null content type
-        // here we tell Mockito to return a list of BeerDTOs when we call the
-        // BeerService listBeers method
-        // given the beerService listBeers method, we will return our testBeers object
-        given(beerService.listBeers(null, null, false)).willReturn(testBeers);
-        // added this additional given to match tutor code - so diff is easier to see
-        given(beerService.listBeers(null, null, false)).willReturn(beerServiceImpl.listBeers(null, null, false));
-
+        // the get will be called
+        // and the mock data returned by the underlying service for the controller
+        // will be for beerServiceImpl.listBeers(null, null, false, 1, 25)
+        // for any values provided to the listBeers service for beerName, beerStyle, showInventory, pageNumber and pageSize
         ResultActions resultActions =
                 mockMvc.perform(get(BeerController.BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(jsonPath("$.length()", is(testBeers.size())));
+                        .andExpect(jsonPath("$.length()", is(3)));
 
         MockMvCHelper.printResultActions(resultActions);
     }
@@ -246,7 +243,7 @@ class BeerControllerTest {
     void getBeerById() throws Exception {
         // the BeerServiceImpl class method listBeers returns a bunch of manually mocked data.
         // here we get the first one from the list
-        BeerDTO testBeer = beerServiceImpl.listBeers(null, null, false).get(0);
+        BeerDTO testBeer = beerServiceImpl.listBeers(null, null, false, 1, 25).get(0);
 
         // previously Mockito was returning a null body and null content type
         // here we tell Mockito to return testBeer for any UUID object passed to the getBeerById method of the BeerService
