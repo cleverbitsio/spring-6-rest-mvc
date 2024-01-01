@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 // This is called a test splice - because we are only annotating by the component we want to test (the JPA repository)
@@ -30,9 +30,9 @@ class BeerRepositoryTest {
     @Test
     void testGetBeerListByName() {
         // Return any beer that contains the string ipa in its name
-        List<Beer> list =  beerRepository.findAllByBeerNameIsLikeIgnoreCase("%IPA%");
+        Page<Beer> list =  beerRepository.findAllByBeerNameIsLikeIgnoreCase("%IPA%", null);
 
-        assertThat(list.size()).isEqualTo(336);
+        assertThat(list.getContent().size()).isEqualTo(336);
     }
 
     @Test
