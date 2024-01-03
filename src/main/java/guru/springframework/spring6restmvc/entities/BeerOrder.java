@@ -32,9 +32,24 @@ import java.util.UUID;
 @Setter
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
+// Lets override the @AllArgsConstructor to use the helper method
+// @AllArgsConstructor
 @Builder
 public class BeerOrder {
+
+    public BeerOrder(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate,
+                     String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines) {
+        this.id = id;
+        this.version = version;
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.customerRef = customerRef;
+        // instead of setting the customer directly
+        // this.customer = customer;
+        // we set customer using the setter method we've overridden:
+        this.setCustomer(customer);
+        this.beerOrderLines = beerOrderLines;
+    }
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -65,7 +80,21 @@ public class BeerOrder {
     @ManyToOne
     private Customer customer;
 
+    // Override the Lombak Setter method
+    // To maintain both sides of the relationship between BeerOrder and Customer
+    public void setCustomer(Customer customer) {
+        // Not only do we want to set the customer
+        this.customer = customer;
+        // We also want to do the inverse of that relationship
+        // Which is to add this order to that customer
+        customer.getBeerOrders().add(this);
+    }
+
+
     @OneToMany(mappedBy = "beerOrder")
     private Set<BeerOrderLine> beerOrderLines;
+
+
+
 
 }

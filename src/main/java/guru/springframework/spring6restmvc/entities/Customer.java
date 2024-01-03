@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,5 +39,9 @@ public class Customer {
 
     // Relationship mapped by the customer property in BeerOrder
     @OneToMany(mappedBy = "customer")
-    private Set<BeerOrder> beerOrders;
+    // We  initialise the beerOrders Set so that we don't hit exceptions when trying to use it
+    // by the BeerOrder relationship helper methods
+    // however then we also need to override the constructor
+    @Builder.Default // this tells Lombok to initialise beerOrders as a HashSet when the builder method is used
+    private Set<BeerOrder> beerOrders = new HashSet<>();
 }
