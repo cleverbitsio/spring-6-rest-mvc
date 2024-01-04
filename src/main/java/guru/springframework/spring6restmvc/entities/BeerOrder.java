@@ -37,8 +37,8 @@ import java.util.UUID;
 @Builder
 public class BeerOrder {
 
-    public BeerOrder(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate,
-                     String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines, BeerOrderShipment beerOrderShipment) {
+    public BeerOrder(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate, String customerRef,
+                     Customer customer, Set<BeerOrderLine> beerOrderLines, BeerOrderShipment beerOrderShipment) {
         this.id = id;
         this.version = version;
         this.createdDate = createdDate;
@@ -49,7 +49,7 @@ public class BeerOrder {
         // we set customer using the setter method we've overridden:
         this.setCustomer(customer);
         this.beerOrderLines = beerOrderLines;
-        this.beerOrderShipment = beerOrderShipment;
+        this.setBeerOrderShipment(beerOrderShipment);
     }
 
     @Id
@@ -91,11 +91,15 @@ public class BeerOrder {
         customer.getBeerOrders().add(this);
     }
 
+    public void setBeerOrderShipment(BeerOrderShipment beerOrderShipment) {
+        this.beerOrderShipment = beerOrderShipment;
+        beerOrderShipment.setBeerOrder(this);
+    }
 
     @OneToMany(mappedBy = "beerOrder")
     private Set<BeerOrderLine> beerOrderLines;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private BeerOrderShipment beerOrderShipment;
 
 
