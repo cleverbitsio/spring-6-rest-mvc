@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,6 +76,7 @@ public class BeerController {
     }
 
     @GetMapping(value = BEER_PATH)
+    @PreAuthorize("hasAuthority('ROLE_cleverbits-data-management')")
     public Page<BeerDTO> listBeers(@RequestParam(required = false) String beerName,
                                    @RequestParam(required = false) BeerStyle beerStyle,
                                    @RequestParam(required = false) Boolean showInventory,
