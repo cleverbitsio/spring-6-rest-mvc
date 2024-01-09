@@ -3,6 +3,8 @@ package guru.springframework.spring6restmvc.controller;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.services.BeerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -77,6 +79,7 @@ public class BeerController {
 
     @GetMapping(value = BEER_PATH)
     @PreAuthorize("hasAuthority('ROLE_cleverbits-data-management')")
+    @Operation(summary = "My endpoint", security = @SecurityRequirement(name = "bearerAuth"))
     public Page<BeerDTO> listBeers(@RequestParam(required = false) String beerName,
                                    @RequestParam(required = false) BeerStyle beerStyle,
                                    @RequestParam(required = false) Boolean showInventory,
