@@ -12,37 +12,37 @@ import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInit
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled=true, prePostEnabled=true)
 public class WebSecurity {
+
+    @Autowired
+    ClientRegistrationRepository clientRegistrationRepository;
+    private final KeycloakLogoutHandler keycloakLogoutHandler;
+
+    public WebSecurity(KeycloakLogoutHandler keycloakLogoutHandler) {
+        this.keycloakLogoutHandler = keycloakLogoutHandler;
+    }
+
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception{
-
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
-
-        http
-                .authorizeHttpRequests(authz ->
-                        authz
-//                                .requestMatchers("/v3/api-docs**", "/swagger-ui/**", "/swagger-ui.html")
-//                                .permitAll()
-                                .anyRequest().authenticated())
-
+        http.authorizeRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                                .requestMatchers("/v3/api-docs**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                .anyRequest().authenticated()
+                )
                 .oauth2Login(Customizer.withDefaults())
                 .logout(logout -> logout
+                        .addLogoutHandler(this.keycloakLogoutHandler)
                         .logoutSuccessHandler(oidcLogoutSuccessHandler())
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
-                )
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
-                        ));
+                );
 
         return http.build();
     }
@@ -51,10 +51,8 @@ public class WebSecurity {
     private OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler() {
         OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(
                 clientRegistrationRepository);
-        successHandler.setPostLogoutRedirectUri("http://localhost:8097/");
+        successHandler.setPostLogoutRedirectUri("http://localhost:8080/");
         return successHandler;
     }
 
-    @Autowired
-    ClientRegistrationRepository clientRegistrationRepository;
 }

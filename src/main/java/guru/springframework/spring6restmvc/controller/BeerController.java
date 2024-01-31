@@ -79,7 +79,6 @@ public class BeerController {
 
     @GetMapping(value = BEER_PATH)
     @PreAuthorize("hasAuthority('ROLE_cleverbits-data-management')")
-    @Operation(summary = "My endpoint", security = @SecurityRequirement(name = "bearerAuth"))
     public Page<BeerDTO> listBeers(@RequestParam(required = false) String beerName,
                                    @RequestParam(required = false) BeerStyle beerStyle,
                                    @RequestParam(required = false) Boolean showInventory,
